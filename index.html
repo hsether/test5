@@ -1,360 +1,232 @@
-<!-- ==================== REQUIRED CSS (only what these sections need) ==================== -->
-<style>
-  /* Prompt Collapsible Section */
-  .prompt-container{margin:2em 0;border:1px solid #ddd;border-radius:8px;overflow:hidden}
-  .prompt-header{background:#f6f8fa;padding:15px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;transition:background .2s}
-  .prompt-header:hover{background:#eef1f4}
-  .prompt-header strong{font-size:1.05em}
-  .prompt-toggle{font-size:1.2em;color:#666;transition:transform .3s}
-  .prompt-container.active .prompt-toggle{transform:rotate(180deg)}
-  .prompt-content{max-height:0;overflow:hidden;transition:max-height .4s ease}
-  .prompt-container.active .prompt-content{max-height:2000px}
-  .prompt-content pre{background:#1e293b;padding:20px;font-family:'Courier New',Courier,monospace;font-size:.9em;line-height:1.5;white-space:pre-wrap;word-wrap:break-word;color:#e2e8f0;margin:0}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Test 5: Microcellular Healing Infographic</title>
 
-  /* Image Gallery */
-  .image-gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin:2em 0}
-  .gallery-item{position:relative;cursor:pointer;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.1);transition:transform .2s,box-shadow .2s}
-  .gallery-item:hover{transform:translateY(-4px);box-shadow:0 4px 12px rgba(0,0,0,.15)}
-  .gallery-item img{width:100%;height:200px;object-fit:cover;display:block}
-  .gallery-label{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,.8),transparent);color:#fff;padding:30px 10px 10px;font-size:.85em;font-weight:600}
+  <style>
+    /* Base */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      line-height: 1.7;
+      color: #333;
+      background: #fff;
+    }
+    .blog-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
 
-  /* Score Table */
-  .score-table-container{margin:2em 0;overflow-x:auto}
-  .score-table{width:100%;border-collapse:collapse;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.1);border-radius:8px;overflow:hidden}
-  .score-table th{background:#2c3e50;color:#fff;padding:12px 10px;text-align:left;font-weight:600;font-size:.9em}
-  .score-table td{padding:12px 10px;border-bottom:1px solid #e0e0e0;font-size:.95em}
-  .score-table tr:last-child td{border-bottom:none}
-  .score-table tr:nth-child(even){background:#f9f9f9}
-  .score-table tr:hover{background:#f5f5f5}
-  .score-table td:first-child{font-weight:600;color:#1a1a1a}
-  .score-table td:last-child{font-weight:700;color:#2c3e50;font-size:1.1em}
-  .ghost-row{background:#ecfdf5 !important}
-  .ghost-row:hover{background:#d1fae5 !important}
+    h2 {
+      font-size: 2em;
+      line-height: 1.3;
+      margin: 0 0 0.8em;
+      color: #1a1a1a;
+      border-bottom: 2px solid #e0e0e0;
+      padding-bottom: 0.3em;
+    }
+    h3 {
+      font-size: 1.5em;
+      margin: 1.3em 0 0.6em;
+      color: #2a2a2a;
+    }
+    p { margin-bottom: 1.2em; }
+    strong { font-weight: 600; color: #1a1a1a; }
 
-  /* Model Notes */
-  .model-note{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:20px;margin:1.5em 0}
-  .model-note h4{margin-top:0;display:flex;align-items:center;gap:10px}
-  .model-note .score-badge{background:#e2e8f0;padding:4px 10px;border-radius:4px;font-size:.85em;font-weight:600}
+    /* Prompt Collapsible */
+    .prompt-container {
+      margin: 2em 0;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .prompt-header {
+      background: #f6f8fa;
+      padding: 15px 20px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+      transition: background 0.2s;
+    }
+    .prompt-header:hover { background: #eef1f4; }
+    .prompt-header strong { font-size: 1.05em; }
+    .prompt-toggle {
+      font-size: 1.2em;
+      color: #666;
+      transition: transform 0.3s;
+    }
+    .prompt-container.active .prompt-toggle { transform: rotate(180deg); }
+    .prompt-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+    }
+    .prompt-container.active .prompt-content { max-height: 2000px; }
+    .prompt-content pre {
+      background: #1e293b;
+      padding: 20px;
+      font-family: "Courier New", Courier, monospace;
+      font-size: 0.9em;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      color: #e2e8f0;
+      margin: 0;
+    }
 
-  /* Lightbox */
-  .lightbox{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.95);z-index:9999;justify-content:center;align-items:center;padding:20px}
-  .lightbox.active{display:flex}
-  .lightbox-content{max-width:90%;max-height:90%;position:relative}
-  .lightbox-content img{max-width:100%;max-height:90vh;object-fit:contain;border-radius:4px}
-  .lightbox-close{position:absolute;top:20px;right:30px;font-size:40px;color:#fff;cursor:pointer;z-index:10000;width:50px;height:50px;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);border-radius:50%;transition:background .2s}
-  .lightbox-close:hover{background:rgba(0,0,0,.8)}
-  .lightbox-caption{color:#fff;text-align:center;margin-top:15px;font-size:1.1em}
+    /* Image Gallery */
+    .image-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin: 2em 0;
+    }
+    .gallery-item {
+      position: relative;
+      cursor: pointer;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .gallery-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .gallery-item img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      display: block;
+    }
+    .gallery-label {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+      color: #fff;
+      padding: 30px 10px 10px;
+      font-size: 0.85em;
+      font-weight: 600;
+    }
 
-  /* Responsive */
-  @media (max-width:768px){
-    .score-table{font-size:.85em}
-    .score-table th,.score-table td{padding:8px 6px}
-    .image-gallery{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
-  }
-</style>
+    /* Score Table */
+    .score-table-container { margin: 2em 0; overflow-x: auto; }
+    .score-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .score-table th {
+      background: #2c3e50;
+      color: #fff;
+      padding: 12px 10px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.9em;
+    }
+    .score-table td {
+      padding: 12px 10px;
+      border-bottom: 1px solid #e0e0e0;
+      font-size: 0.95em;
+    }
+    .score-table tr:last-child td { border-bottom: none; }
+    .score-table tr:nth-child(even) { background: #f9f9f9; }
+    .score-table tr:hover { background: #f5f5f5; }
+    .score-table td:first-child { font-weight: 600; color: #1a1a1a; }
+    .score-table td:last-child { font-weight: 700; color: #2c3e50; font-size: 1.1em; }
+    .ghost-row { background: #ecfdf5 !important; }
+    .ghost-row:hover { background: #d1fae5 !important; }
 
-<!-- ==================== TEST 2 ==================== -->
-<h2>Test 2: Valve Deployed Inside Heart Cutaway</h2>
+    /* Model Notes */
+    .model-note {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 1.5em 0;
+    }
+    .model-note h4 {
+      margin-top: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.2em;
+      color: #1a1a1a;
+    }
+    .model-note .score-badge {
+      background: #e2e8f0;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.85em;
+      font-weight: 600;
+    }
 
-<div class="prompt-container" onclick="togglePrompt(this)">
-  <div class="prompt-header">
-    <strong>Show Prompt: Test 2, Valve Deployed in Heart</strong>
-    <span class="prompt-toggle">&#9660;</span>
-  </div>
-  <div class="prompt-content">
-    <pre>High resolution, photorealistic 3D medical illustration of a balloon-expandable transcatheter aortic valve prosthesis deployed inside a surgical cutaway of the human heart.
+    /* Lightbox */
+    .lightbox {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.95);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .lightbox.active { display: flex; }
+    .lightbox-content { max-width: 90%; max-height: 90%; position: relative; }
+    .lightbox-content img { max-width: 100%; max-height: 90vh; object-fit: contain; border-radius: 4px; }
+    .lightbox-close {
+      position: absolute;
+      top: 20px; right: 30px;
+      font-size: 40px;
+      color: #fff;
+      cursor: pointer;
+      z-index: 10000;
+      width: 50px; height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.5);
+      border-radius: 50%;
+      transition: background 0.2s;
+    }
+    .lightbox-close:hover { background: rgba(0,0,0,0.8); }
+    .lightbox-caption { color: #fff; text-align: center; margin-top: 15px; font-size: 1.1em; }
 
-The view is from inside the left ventricle looking toward the aortic root. The heart tissue shows thick, moist endocardial surfaces with realistic texture and coloration. The valve is seated at the aortic annulus with the fabric sealing skirt interfacing with the native tissue in a clinically plausible manner.
+    /* Responsive */
+    @media (max-width: 768px) {
+      h2 { font-size: 1.6em; }
+      .score-table { font-size: 0.85em; }
+      .score-table th, .score-table td { padding: 8px 6px; }
+      .image-gallery { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+    }
+  </style>
+</head>
 
-The device features a short cylindrical stent frame with metallic diamond lattice struts, three pale cream bioprosthetic leaflets in neutral position, and thin dark commissure posts.
+<body>
+  <div class="blog-container">
 
-A delivery catheter with marker rings is visible, connected to a continuous guidewire. Clinical studio lighting with controlled reflections, shallow depth of field, no text, no watermark, no logo.</pre>
-  </div>
-</div>
+    <h2>Test 5: Microcellular Healing Infographic</h2>
 
-<div class="image-gallery">
-  <div class="gallery-item" onclick="openLightbox('test2-ghost')">
-    <img src="images/test2-ghost.webp" alt="Ghost Heart Deployed">
-    <div class="gallery-label">Ghost Human (25/25)</div>
-  </div>
-  <div class="gallery-item" onclick="openLightbox('test2-aimage')">
-    <img src="images/test2-aimage.webp" alt="AIMAGE Heart Deployed">
-    <div class="gallery-label">AIMAGE (21/25)</div>
-  </div>
-  <div class="gallery-item" onclick="openLightbox('test2-sora')">
-    <img src="images/test2-sora.webp" alt="Sora Heart Deployed">
-    <div class="gallery-label">Sora (19/25)</div>
-  </div>
-  <div class="gallery-item" onclick="openLightbox('test2-flux')">
-    <img src="images/test2-flux2.webp" alt="Flux 2 Heart Deployed">
-    <div class="gallery-label">Flux 2 (16/25)</div>
-  </div>
-  <div class="gallery-item" onclick="openLightbox('test2-nano')">
-    <img src="images/test2-nanobanana.webp" alt="Nano Banana Heart Deployed">
-    <div class="gallery-label">Nano Banana (15/25)</div>
-  </div>
-  <div class="gallery-item" onclick="openLightbox('test2-midjourney')">
-    <img src="images/test2-midjourney.webp" alt="Midjourney Heart Deployed">
-    <div class="gallery-label">Midjourney (12/25)</div>
-  </div>
-  <div class="gallery-item" onclick="openLightbox('test2-grok')">
-    <img src="images/test2-grok.webp" alt="Grok Heart Deployed">
-    <div class="gallery-label">Grok (10/25)</div>
-  </div>
-</div>
-
-<div class="score-table-container">
-  <table class="score-table">
-    <thead>
-      <tr>
-        <th>Generator</th><th>Prompt</th><th>Labels</th><th>Medical</th><th>Concept</th><th>Polish</th><th>Total</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr class="ghost-row"><td>Ghost (Human Baseline)</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td><td><strong>25</strong></td></tr>
-      <tr><td>AIMAGE</td><td>4</td><td>5</td><td>4</td><td>4</td><td>4</td><td><strong>21</strong></td></tr>
-      <tr><td>Sora</td><td>3</td><td>5</td><td>3</td><td>4</td><td>4</td><td><strong>19</strong></td></tr>
-      <tr><td>Flux 2</td><td>3</td><td>5</td><td>2</td><td>3</td><td>3</td><td><strong>16</strong></td></tr>
-      <tr><td>Nano Banana</td><td>2</td><td>5</td><td>2</td><td>3</td><td>3</td><td><strong>15</strong></td></tr>
-      <tr><td>Midjourney</td><td>2</td><td>5</td><td>1</td><td>2</td><td>2</td><td><strong>12</strong></td></tr>
-      <tr><td>Grok</td><td>2</td><td>5</td><td>1</td><td>2</td><td>0</td><td><strong>10</strong></td></tr>
-    </tbody>
-  </table>
-</div>
-
-<h3>Model-by-Model Notes</h3>
-
-<div class="model-note">
-  <h4>Ghost (Human Baseline) <span class="score-badge">25/25</span></h4>
-  <p>Nails the requested inside-the-heart viewpoint, with convincing endocardial surfaces and an OR-style cutaway feel. The device placement reads as clinically plausible, seated at the annulus with tissue hugging the skirt in a believable way. Catheter alignment, guidewire continuity, and device details look intentional, not invented. Most importantly, this is CAD-based and surgeon-approved for placement and realism. That's what "as accurate and validated as it gets" looks like.</p>
-</div>
-<div class="model-note">
-  <h4>AIMAGE <span class="score-badge">21/25</span></h4>
-  <p>Very close to Ghost's framing and lighting, with believable wet tissue and a strong "in vivo cutaway" read. Valve looks broadly like a TAVR, with recognizable skirt and leaflets. Includes procedure cues (catheter and wires) in a way that mostly supports the story. Lost points because small geometry and anatomy decisions feel a bit improvised compared to Ghost, especially around how tissue interfaces with the skirt. It's close enough to be useful as a concept assist, but it's not at the "validated illustration" bar.</p>
-</div>
-<div class="model-note">
-  <h4>Sora <span class="score-badge">19/25</span></h4>
-  <p>Clean, polished cutaway look, good tissue shading, and a clear valve-at-annulus idea. The valve is centered and easy to read, with good overall clarity. Lost points because it drops key prompt requirements, most notably the catheter with marker rings and the continuous guidewire. It's "medical-looking" and well-rendered, but less procedurally truthful.</p>
-</div>
-<div class="model-note">
-  <h4>Flux 2 <span class="score-badge">16/25</span></h4>
-  <p>Includes the procedural setup (catheter, guidewire) and a readable cutaway scene. Decent polish and lighting. Lost points because the valve proportions and shape are off. The stent and skirt relationship looks wrong, and the overall geometry reads like something that would not realistically seat at the annulus. <strong>This is the exact failure mode that makes device marketing risky.</strong> It can look credible to non-experts while being physically implausible to anyone who knows the implant.</p>
-</div>
-<div class="model-note">
-  <h4>Midjourney <span class="score-badge">12/25</span></h4>
-  <p>Produces a dramatic medical render aesthetic. Device geometry becomes exaggerated and mechanically nonsensical relative to a real TAVR. View and anatomy are not reliably aligned with the specific instructions, and the result reads more like "cool sci-med concept art" than a constrained clinical illustration.</p>
-</div>
-<div class="model-note">
-  <h4>Grok <span class="score-badge">10/25</span></h4>
-  <p>Attempts a heart cutaway context. The device becomes an invented object. The stent and internal structure don't read like a deployed transcatheter valve. This is the "confident hallucination" problem: it outputs something that looks engineered, but it's not the <em>right</em> engineered thing. In a medical context, that's an automatic fail.</p>
-</div>
-
-<!-- ==================== TEST 3 ==================== -->
-<h2>Test 3: Rotator Cuff Tendon Repair on Humeral Head</h2>
-
-<div class="prompt-container" onclick="togglePrompt(this)">
-  <div class="prompt-header">
-    <strong>Show Prompt: Test 3, Rotator Cuff Repair</strong>
-    <span class="prompt-toggle">&#9660;</span>
-  </div>
-  <div class="prompt-content">
-    <pre>High resolution, photorealistic 3D orthopedic medical illustration of a rotator cuff repair on the shoulder.
-
-Show the proximal humerus with the rounded humeral head and a cut surface of cancellous bone at the greater tuberosity region, pale beige with porous texture. Surrounding is red striated muscle (deltoid and rotator cuff region) with realistic fiber direction and subtle sheen.
-
-On the lateral aspect, depict a repaired tendon footprint secured with two small circular suture anchors seated in bone, each anchor head visible as a small beige or metallic disk. Two wide blue suture tapes cross over two smooth white protective pads or tendon compression devices, forming an X pattern that compresses the tendon down onto the bone footprint.
-
-Composition is clean and centered, floating on a minimal white background with soft translucent abstract wave shapes behind the anatomy. Studio medical lighting, crisp focus, no text, no watermark, no logo.</pre>
-  </div>
-</div>
-
-<div class="image-gallery">
-  <div class="gallery-item" onclick="openLightbox('test3-ghost')">
-    <img src="images/test3-ghost.webp" alt="Ghost Shoulder">
-    <div class="gallery-label">Ghost Human (25/25)</div>
-  </div>
-  <div class="gallery-item" onclick="openLightbox('test3-aimage')">
-    <img src="images/test3-aimage.webp" alt="AIMAGE Shoulder">
-    <div class="gallery-label">AIMAGE (21/25)</div>
-  </div>
-  <div class="gallery-item" onclick="openLightbox('test3-sora')">
-    <img src="images/test3-sora.webp" alt="Sora Shoulder">
-    <div class="gallery-label">Sora (20/25)</div>
-  </div>
-  <div class="gallery-item" onclick="openLightbox('test3-midjourney')">
-    <img src="images/test3-midjourney.webp" alt="Midjourney Shoulder">
-    <div class="gallery-label">Midjourney (12/25)</div>
-  </div>
-  <div class="gallery-item" onclick="openLightbox('test3-flux')">
-    <img src="images/test3-flux2.webp" alt="Flux 2 Shoulder">
-    <div class="gallery-label">Flux 2 (11/25)</div>
-  </div>
-  <div class="gallery-item" onclick="openLightbox('test3-nano')">
-    <img src="images/test3-nanobanana.webp" alt="Nano Banana Shoulder">
-    <div class="gallery-label">Nano Banana (11/25)</div>
-  </div>
-  <div class="gallery-item" onclick="openLightbox('test3-grok')">
-    <img src="images/test3-grok.webp" alt="Grok Shoulder">
-    <div class="gallery-label">Grok (9/25)</div>
-  </div>
-</div>
-
-<div class="score-table-container">
-  <table class="score-table">
-    <thead>
-      <tr>
-        <th>Generator</th><th>Prompt</th><th>Labels</th><th>Medical</th><th>Concept</th><th>Polish</th><th>Total</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr class="ghost-row"><td>Ghost (Human Baseline)</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td><td><strong>25</strong></td></tr>
-      <tr><td>AIMAGE</td><td>4</td><td>5</td><td>4</td><td>4</td><td>4</td><td><strong>21</strong></td></tr>
-      <tr><td>Sora</td><td>4</td><td>5</td><td>3</td><td>4</td><td>4</td><td><strong>20</strong></td></tr>
-      <tr><td>Midjourney</td><td>2</td><td>5</td><td>1</td><td>2</td><td>2</td><td><strong>12</strong></td></tr>
-      <tr><td>Flux 2</td><td>1</td><td>5</td><td>1</td><td>2</td><td>2</td><td><strong>11</strong></td></tr>
-      <tr><td>Nano Banana</td><td>1</td><td>5</td><td>1</td><td>1</td><td>3</td><td><strong>11</strong></td></tr>
-      <tr><td>Grok</td><td>1</td><td>5</td><td>1</td><td>1</td><td>1</td><td><strong>9</strong></td></tr>
-    </tbody>
-  </table>
-</div>
-
-<h3>Model-by-Model Notes</h3>
-
-<div class="model-note">
-  <h4>Ghost (Human Baseline) <span class="score-badge">25/25</span></h4>
-  <p>Hits every demanded element cleanly. Correct bony landmarking and cancellous cut, appropriate muscle context, two anchors, two pads, and a clear X-pattern tape construct compressing the footprint. The background treatment matches the "clean studio with wave shapes" spec. This is what the prompt is trying to reproduce, and it's the only image in the set that's a verified medical communication asset rather than a best-effort guess.</p>
-</div>
-<div class="model-note">
-  <h4>AIMAGE <span class="score-badge">21/25</span></h4>
-  <p>Closest to Ghost's composition. Clean white studio look, believable anatomy, background waves present, and the hardware is mostly in the right "family" (pads, tapes, anchor-like elements). Lost points because the tape routing and compression logic doesn't read as a crisp "two wide tapes forming an X over two pads." It's close, but the construct looks slightly improvised, which is exactly where medical device and procedure visuals can become non-defensible.</p>
-</div>
-<div class="model-note">
-  <h4>Sora <span class="score-badge">20/25</span></h4>
-  <p>Strong studio render quality and generally correct "rotator cuff repair vibe." Anchor-like hardware and sutures look plausible, and the tendon-on-bone concept is communicated clearly. Lost points because instead of two wide tapes crossing as an X over two pads, it trends toward multiple passes/loops. It also doesn't clearly deliver the abstract wave background requirement in the same way Ghost does.</p>
-</div>
-<div class="model-note">
-  <h4>Midjourney <span class="score-badge">12/25</span></h4>
-  <p>High visual punch and material detail. The repair construct becomes fantasy hardware. The blue "mass" and wiring look more like stylized textile or device debris than two tapes + two pads + two anchors. Background is not the clean white studio wave setup, and the anatomy-read is not anchored to a believable surgical illustration.</p>
-</div>
-<div class="model-note">
-  <h4>Flux 2 <span class="score-badge">11/25</span></h4>
-  <p>Clean background, decent rendering polish. It doesn't depict a rotator cuff repair construct. The scene reads like a shoulder anatomy render with an unrelated strap/cap concept. The required anchors, pads, and X-pattern tape compression are not present, so it can't score on adherence or medical accuracy.</p>
-</div>
-<div class="model-note">
-  <h4>Nano Banana <span class="score-badge">11/25</span></h4>
-  <p>Looks dramatic and "medical cinematic." It ignores the studio requirement and substitutes a stylized environment. It also doesn't deliver the specific repair construct (pads, anchors, correct tape layout). This is concept art, not a reproducible surgical visual.</p>
-</div>
-<div class="model-note">
-  <h4>Grok <span class="score-badge">9/25</span></h4>
-  <p>Wrong scene language and framing, wrong background, and the construct is not the requested repair. It doesn't follow the spec closely enough to earn points beyond "no labels."</p>
-</div>
-
-<!-- ==================== TEST 4 ==================== -->
-<h2>Test 4: IV Catheter Hub with Labeled Callouts</h2>
-
-<div class="prompt-container" onclick="togglePrompt(this)">
-  <div class="prompt-header">
-    <strong>Show Prompt: Test 4, IV Catheter with Labels</strong>
-    <span class="prompt-toggle">&#9660;</span>
-  </div>
-  <div class="prompt-content">
-    <pre>Cinematic, photorealistic 3D medical render of an IV catheter system inserted into skin, wide horizontal composition.
-
-Foreground shows human skin surface in warm tan with fine pores and realistic specular highlights. A transparent ridged catheter hub and needle assembly are shown in close up, made of clear plastic with internal geometry visible, connected to a bluish catheter segment. Two translucent gloved fingertips hover above and behind, softly out of focus.
-
-Add two amber futuristic HUD callout labels with thin leader lines and small circular anchor points. The upper label text reads exactly: "Push-Off Tab". The lower label text reads exactly: "Ridged Catheter Hub".
-
-The label boxes are dark with glowing amber borders and subtle UI micro details, crisp typography, no other text. Soft clinical lighting, shallow depth of field, no watermark, no logo.</pre>
-  </div>
-</div>
-
-<div class="image-gallery">
-  <div class="gallery-item" onclick="openLightbox('test4-ghost')">
-    <img src="images/test4-ghost.webp" alt="Ghost IV">
-    <div class="gallery-label">Ghost Human (25/25)</div>
-  </div>
-  <div class="gallery-item" onclick="openLightbox('test4-sora')">
-    <img src="images/test4-sora.webp" alt="Sora IV">
-    <div class="gallery-label">Sora (17/25)</div>
-  </div>
-  <div class="gallery-item" onclick="openLightbox('test4-aimage')">
-    <img src="images/test4-aimage.webp" alt="AIMAGE IV">
-    <div class="gallery-label">AIMAGE (16/25)</div>
-  </div>
-  <div class="gallery-item" onclick="openLightbox('test4-nano')">
-    <img src="images/test4-nanobanana.webp" alt="Nano Banana IV">
-    <div class="gallery-label">Nano Banana (13/25)</div>
-  </div>
-  <div class="gallery-item" onclick="openLightbox('test4-flux')">
-    <img src="images/test4-flux2.webp" alt="Flux 2 IV">
-    <div class="gallery-label">Flux 2 (13/25)</div>
-  </div>
-  <div class="gallery-item" onclick="openLightbox('test4-grok')">
-    <img src="images/test4-grok.webp" alt="Grok IV">
-    <div class="gallery-label">Grok (12/25)</div>
-  </div>
-  <div class="gallery-item" onclick="openLightbox('test4-midjourney')">
-    <img src="images/test4-midjourney.webp" alt="Midjourney IV">
-    <div class="gallery-label">Midjourney (9/25)</div>
-  </div>
-</div>
-
-<div class="score-table-container">
-  <table class="score-table">
-    <thead>
-      <tr>
-        <th>Generator</th><th>Prompt</th><th>Labels</th><th>Medical</th><th>Concept</th><th>Polish</th><th>Total</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr class="ghost-row"><td>Ghost (Human Baseline)</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td><td><strong>25</strong></td></tr>
-      <tr><td>Sora</td><td>3</td><td>4</td><td>2</td><td>4</td><td>4</td><td><strong>17</strong></td></tr>
-      <tr><td>AIMAGE</td><td>3</td><td>4</td><td>2</td><td>4</td><td>3</td><td><strong>16</strong></td></tr>
-      <tr><td>Nano Banana</td><td>2</td><td>2</td><td>2</td><td>3</td><td>4</td><td><strong>13</strong></td></tr>
-      <tr><td>Flux 2</td><td>3</td><td>2</td><td>1</td><td>3</td><td>4</td><td><strong>13</strong></td></tr>
-      <tr><td>Grok</td><td>2</td><td>2</td><td>2</td><td>3</td><td>3</td><td><strong>12</strong></td></tr>
-      <tr><td>Midjourney</td><td>1</td><td>0</td><td>2</td><td>2</td><td>4</td><td><strong>9</strong></td></tr>
-    </tbody>
-  </table>
-</div>
-
-<h3>Model-by-Model Notes</h3>
-
-<div class="model-note">
-  <h4>Ghost (Human Baseline) <span class="score-badge">25/25</span></h4>
-  <p>Everything the prompt demanded shows up cleanly and intentionally. Clear hub with believable internal detail, correct clinical framing, soft DOF with gloved fingertips, and the amber HUD callouts are the exact style target. This is what "production-correct" looks like. It's not just pretty. It's art-directed, CAD-grounded, and clinically reviewed, so the prompt is effectively a description of this result.</p>
-</div>
-<div class="model-note">
-  <h4>Sora <span class="score-badge">17/25</span></h4>
-  <p>Clean, readable callouts with correct phrases, clear product visibility, and overall high polish. If someone needed a quick marketing graphic, it's close. Lost points because the labels are not the amber HUD style with micro UI details. They're conventional boxes. The "two translucent gloved fingertips hovering" requirement is not met as written. One of the better "follow instructions and look clean" attempts, but it doesn't hit the specific Ghost HUD art direction.</p>
-</div>
-<div class="model-note">
-  <h4>AIMAGE <span class="score-badge">16/25</span></h4>
-  <p>Strongly resembles the client's callout branding language and placement logic. Two callouts, leader lines, readable typography, generally clean presentation. Lost points because HUD color and styling drift (reads more "blue hologram overlays" than "amber futuristic HUD"), and the composition is not the requested tight macro closeup with two out-of-focus fingertips hovering behind. Very usable as a style-matcher, still not dependable for clinically plausible placement without correction.</p>
-</div>
-<div class="model-note">
-  <h4>Flux 2 <span class="score-badge">13/25</span></h4>
-  <p>The callout style is suspiciously close to the Ghost HUD look, and the render polish is strong. If this were a pure "make it look cool" test, it would rank higher. Lost points because the lower label is misspelled ("Ridge Catheter Hub" instead of "Ridged Catheter Hub"), which is an automatic major hit in a medical labeling test. It appears to have learned the aesthetic, but not the clinical truth underneath it.</p>
-</div>
-<div class="model-note">
-  <h4>Nano Banana <span class="score-badge">13/25</span></h4>
-  <p>Strong visual polish, clean studio feel, good depth and lighting. Lost points because of misspelling on "Ridged Catheter Hub" (it reads like "Carheter"), which is a labeling failure for this test. Looks good, fails the "exact words, exact style" requirement.</p>
-</div>
-<div class="model-note">
-  <h4>Midjourney <span class="score-badge">9/25</span></h4>
-  <p>High-end cinematic rendering and texture detail. <strong>This is the classic failure mode.</strong> It invents extra labels, adds gibberish microtext, and violates "no other text." It can look expensive, but it's unreliable where medical work actually breaks, which is text discipline and constraint-following.</p>
-</div>
-
-<!-- ==================== TEST 5 ==================== -->
-<h2>Test 5: Microcellular Healing Infographic</h2>
-
-<div class="prompt-container" onclick="togglePrompt(this)">
-  <div class="prompt-header">
-    <strong>Show Prompt: Test 5, Microcellular Healing Infographic</strong>
-    <span class="prompt-toggle">&#9660;</span>
-  </div>
-  <div class="prompt-content">
-    <pre>High resolution, wide horizontal medical infographic illustration showing tissue healing progression inside a fibrous scaffold, left to right.
+    <!-- Optional: keep the collapsible prompt (matches your screenshot header) -->
+    <div class="prompt-container" onclick="togglePrompt(this)">
+      <div class="prompt-header">
+        <strong>Show Prompt: Test 5, Microcellular Healing Infographic</strong>
+        <span class="prompt-toggle">&#9660;</span>
+      </div>
+      <div class="prompt-content">
+        <pre>High resolution, wide horizontal medical infographic illustration showing tissue healing progression inside a fibrous scaffold, left to right.
 
 Background is a clean gradient panel with a rounded rectangular frame, subtle drop shadow, and a neutral clinical gray backdrop.
 
@@ -372,155 +244,176 @@ Middle tab, magenta theme: "1-45 Days" on the top line and "Cellular Proliferati
 Right tab, blue theme: "30-300 Days" on the top line and "Maturation & Remodeling" beneath it.
 
 Typography is modern, clean, perfectly spelled, and does not overlap the main illustration. Soft clinical lighting, realistic restrained colors, no decorative flourishes, no branding, no watermark, no logo.</pre>
+      </div>
+    </div>
+
+    <!-- Image tiles -->
+    <div class="image-gallery">
+      <div class="gallery-item" onclick="openLightbox('test5-ghost')">
+        <img src="images/test5-ghost.webp" alt="Ghost MOA Infographic" />
+        <div class="gallery-label">Ghost Human (25/25)</div>
+      </div>
+      <div class="gallery-item" onclick="openLightbox('test5-sora')">
+        <img src="images/test5-sora.webp" alt="Sora MOA Infographic" />
+        <div class="gallery-label">Sora (21/25)</div>
+      </div>
+      <div class="gallery-item" onclick="openLightbox('test5-flux')">
+        <img src="images/test5-flux2.webp" alt="Flux 2 MOA Infographic" />
+        <div class="gallery-label">Flux 2 (20/25)</div>
+      </div>
+      <div class="gallery-item" onclick="openLightbox('test5-aimage')">
+        <img src="images/test5-aimage.webp" alt="AIMAGE MOA Infographic" />
+        <div class="gallery-label">AIMAGE (18/25)</div>
+      </div>
+      <div class="gallery-item" onclick="openLightbox('test5-nano')">
+        <img src="images/test5-nanobanana.webp" alt="Nano Banana MOA Infographic" />
+        <div class="gallery-label">Nano Banana (14/25)</div>
+      </div>
+      <div class="gallery-item" onclick="openLightbox('test5-grok')">
+        <img src="images/test5-grok.webp" alt="Grok MOA Infographic" />
+        <div class="gallery-label">Grok (13/25)</div>
+      </div>
+      <div class="gallery-item" onclick="openLightbox('test5-midjourney')">
+        <img src="images/test5-midjourney.webp" alt="Midjourney MOA Infographic" />
+        <div class="gallery-label">Midjourney (11/25)</div>
+      </div>
+    </div>
+
+    <!-- Score table -->
+    <div class="score-table-container">
+      <table class="score-table">
+        <thead>
+          <tr>
+            <th>Generator</th>
+            <th>Prompt</th>
+            <th>Tabs</th>
+            <th>Bio Story</th>
+            <th>Clarity</th>
+            <th>Render</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="ghost-row">
+            <td>Ghost (Human Baseline)</td>
+            <td>5</td><td>5</td><td>5</td><td>5</td><td>5</td>
+            <td><strong>25</strong></td>
+          </tr>
+          <tr>
+            <td>Sora</td>
+            <td>4</td><td>5</td><td>4</td><td>4</td><td>4</td>
+            <td><strong>21</strong></td>
+          </tr>
+          <tr>
+            <td>Flux 2</td>
+            <td>4</td><td>5</td><td>4</td><td>3</td><td>4</td>
+            <td><strong>20</strong></td>
+          </tr>
+          <tr>
+            <td>AIMAGE</td>
+            <td>3</td><td>4</td><td>4</td><td>3</td><td>4</td>
+            <td><strong>18</strong></td>
+          </tr>
+          <tr>
+            <td>Nano Banana</td>
+            <td>2</td><td>4</td><td>2</td><td>3</td><td>3</td>
+            <td><strong>14</strong></td>
+          </tr>
+          <tr>
+            <td>Grok</td>
+            <td>2</td><td>2</td><td>3</td><td>2</td><td>4</td>
+            <td><strong>13</strong></td>
+          </tr>
+          <tr>
+            <td>Midjourney</td>
+            <td>1</td><td>1</td><td>3</td><td>2</td><td>4</td>
+            <td><strong>11</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Model-by-model notes -->
+    <h3>Model-by-Model Notes</h3>
+
+    <div class="model-note">
+      <h4>Ghost (Human Baseline) <span class="score-badge">25/25</span></h4>
+      <p>Worth noting: MOAs are more about artistically imagining microcellular structures than actually knowing what they look like or how they interact. Even Ghost is flying more in imagination than strict medical adherence to structure and coloring. But this is what the client wanted, and Ghost delivered what the client wanted. That's the job.</p>
+    </div>
+
+    <div class="model-note">
+      <h4>Sora <span class="score-badge">21/25</span></h4>
+      <p>Very strong on the core infographic band. The left inflammatory zone, middle proliferative zone with spindle-like cells, and right mature zone with branching vessels read cleanly. Text is clear and correctly spelled. Lost points because the prompt asked for three color-coded header tabs with circular thumbnails. This version uses clean circular labels but not the tab system or thumbnail treatment.</p>
+    </div>
+
+    <div class="model-note">
+      <h4>Flux 2 <span class="score-badge">20/25</span></h4>
+      <p>Follows the infographic "panel" idea well, including the rounded frame and the three color-coded header tabs with the correct text. The staged biological progression is present. Lost points because the composition wastes a lot of space, with the main band sitting smaller inside a large empty panel.</p>
+    </div>
+
+    <div class="model-note">
+      <h4>AIMAGE <span class="score-badge">18/25</span></h4>
+      <p>Excellent micro-structure energy and density, and it broadly communicates inflammation to remodeling. The phase labels and time ranges are correct and placed at the top without colliding heavily. Lost points because the top UI spec is not followed (no header tabs with circular thumbnails), and the scaffold fibers become visually dominant and clutter the readability.</p>
+    </div>
+
+    <div class="model-note">
+      <h4>Grok <span class="score-badge">13/25</span></h4>
+      <p>The micro environment looks plausibly "cellular," and the render itself is reasonably polished. Failed multiple hard constraints: wrong time labeling (uses "45+ Days" instead of "30-300 Days"), missing the requested header-tab system and rounded panel framing.</p>
+    </div>
+
+    <div class="model-note">
+      <h4>Midjourney <span class="score-badge">11/25</span></h4>
+      <p>Render polish and micro-fiber aesthetics are strong. Violates the biggest hard constraint: text must be perfectly spelled and exactly match. This one contains gibberish and incorrect labels, and it doesn't follow the specified header-tab system or the exact time/phase structure.</p>
+    </div>
+
   </div>
-</div>
 
-<div class="image-gallery">
-  <div class="gallery-item" onclick="openLightbox('test5-ghost')">
-    <img src="images/test5-ghost.webp" alt="Ghost MOA">
-    <div class="gallery-label">Ghost Human (25/25)</div>
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+    <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+    <div class="lightbox-content" onclick="event.stopPropagation()">
+      <img id="lightbox-img" src="" alt="Expanded view" />
+      <div id="lightbox-caption" class="lightbox-caption"></div>
+    </div>
   </div>
-  <div class="gallery-item" onclick="openLightbox('test5-sora')">
-    <img src="images/test5-sora.webp" alt="Sora MOA">
-    <div class="gallery-label">Sora (21/25)</div>
-  </div>
-  <div class="gallery-item" onclick="openLightbox('test5-flux')">
-    <img src="images/test5-flux2.webp" alt="Flux 2 MOA">
-    <div class="gallery-label">Flux 2 (20/25)</div>
-  </div>
-  <div class="gallery-item" onclick="openLightbox('test5-aimage')">
-    <img src="images/test5-aimage.webp" alt="AIMAGE MOA">
-    <div class="gallery-label">AIMAGE (18/25)</div>
-  </div>
-  <div class="gallery-item" onclick="openLightbox('test5-nano')">
-    <img src="images/test5-nanobanana.webp" alt="Nano Banana MOA">
-    <div class="gallery-label">Nano Banana (14/25)</div>
-  </div>
-  <div class="gallery-item" onclick="openLightbox('test5-grok')">
-    <img src="images/test5-grok.webp" alt="Grok MOA">
-    <div class="gallery-label">Grok (13/25)</div>
-  </div>
-  <div class="gallery-item" onclick="openLightbox('test5-midjourney')">
-    <img src="images/test5-midjourney.webp" alt="Midjourney MOA">
-    <div class="gallery-label">Midjourney (11/25)</div>
-  </div>
-</div>
 
-<div class="score-table-container">
-  <table class="score-table">
-    <thead>
-      <tr>
-        <th>Generator</th><th>Prompt</th><th>Tabs</th><th>Bio Story</th><th>Clarity</th><th>Render</th><th>Total</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr class="ghost-row"><td>Ghost (Human Baseline)</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td><td><strong>25</strong></td></tr>
-      <tr><td>Sora</td><td>4</td><td>5</td><td>4</td><td>4</td><td>4</td><td><strong>21</strong></td></tr>
-      <tr><td>Flux 2</td><td>4</td><td>5</td><td>4</td><td>3</td><td>4</td><td><strong>20</strong></td></tr>
-      <tr><td>AIMAGE</td><td>3</td><td>4</td><td>4</td><td>3</td><td>4</td><td><strong>18</strong></td></tr>
-      <tr><td>Nano Banana</td><td>2</td><td>4</td><td>2</td><td>3</td><td>3</td><td><strong>14</strong></td></tr>
-      <tr><td>Grok</td><td>2</td><td>2</td><td>3</td><td>2</td><td>4</td><td><strong>13</strong></td></tr>
-      <tr><td>Midjourney</td><td>1</td><td>1</td><td>3</td><td>2</td><td>4</td><td><strong>11</strong></td></tr>
-    </tbody>
-  </table>
-</div>
+  <script>
+    function togglePrompt(element) {
+      element.classList.toggle("active");
+    }
 
-<h3>Model-by-Model Notes</h3>
+    const lightboxData = {
+      "test5-ghost": { src: "images/test5-ghost.webp", caption: "Ghost MOA Infographic (25/25)" },
+      "test5-sora": { src: "images/test5-sora.webp", caption: "Sora MOA Infographic (21/25)" },
+      "test5-flux": { src: "images/test5-flux2.webp", caption: "Flux 2 MOA Infographic (20/25)" },
+      "test5-aimage": { src: "images/test5-aimage.webp", caption: "AIMAGE MOA Infographic (18/25)" },
+      "test5-nano": { src: "images/test5-nanobanana.webp", caption: "Nano Banana MOA Infographic (14/25)" },
+      "test5-grok": { src: "images/test5-grok.webp", caption: "Grok MOA Infographic (13/25)" },
+      "test5-midjourney": { src: "images/test5-midjourney.webp", caption: "Midjourney MOA Infographic (11/25)" }
+    };
 
-<div class="model-note">
-  <h4>Ghost (Human Baseline) <span class="score-badge">25/25</span></h4>
-  <p>Worth noting: MOAs are more about artistically imagining microcellular structures than actually knowing what they look like or how they interact. Even Ghost is flying more in imagination than strict medical adherence to structure and coloring. But this is what the client wanted, and Ghost delivered what the client wanted. That's the job.</p>
-</div>
-<div class="model-note">
-  <h4>Sora <span class="score-badge">21/25</span></h4>
-  <p>Very strong on the core infographic band. The left inflammatory zone, middle proliferative zone with spindle-like cells, and right mature zone with branching vessels read cleanly. Text is clear and correctly spelled. Lost points because the prompt asked for three color-coded header tabs with circular thumbnails. This version uses clean circular labels but not the tab system or thumbnail treatment. Close to the prompt on the science-illustration read and clarity, slightly off on the specific header-tab styling requirements.</p>
-</div>
-<div class="model-note">
-  <h4>Flux 2 <span class="score-badge">20/25</span></h4>
-  <p>Follows the infographic "panel" idea well, including the rounded frame and the three color-coded header tabs with the correct text. The staged biological progression is present. Lost points because the composition wastes a lot of space, with the main band sitting smaller inside a large empty panel. It checks many boxes, but the execution feels like a template with a small inset illustration rather than the centerpiece being the band itself.</p>
-</div>
-<div class="model-note">
-  <h4>AIMAGE <span class="score-badge">18/25</span></h4>
-  <p>Excellent micro-structure energy and density, and it broadly communicates inflammation to remodeling. The phase labels and time ranges are correct and placed at the top without colliding heavily. Lost points because the top UI spec is not followed (no header tabs with circular thumbnails), and the scaffold fibers become visually dominant and clutter the readability. Strong "trained-on-brand" vibe but too busy.</p>
-</div>
-<div class="model-note">
-  <h4>Grok <span class="score-badge">13/25</span></h4>
-  <p>The micro environment looks plausibly "cellular," and the render itself is reasonably polished. Failed multiple hard constraints: wrong time labeling (uses "45+ Days" instead of "30-300 Days"), missing the requested header-tab system and rounded panel framing. Pretty image, but it's not the prompt.</p>
-</div>
-<div class="model-note">
-  <h4>Midjourney <span class="score-badge">11/25</span></h4>
-  <p>Render polish and micro-fiber aesthetics are strong. Violates the biggest hard constraint: text must be perfectly spelled and exactly match. This one contains gibberish and incorrect labels, and it doesn't follow the specified header-tab system or the exact time/phase structure. Visually attractive, structurally non-compliant.</p>
-</div>
+    function openLightbox(imageId) {
+      const lightbox = document.getElementById("lightbox");
+      const img = document.getElementById("lightbox-img");
+      const caption = document.getElementById("lightbox-caption");
+      const data = lightboxData[imageId];
+      if (data) {
+        img.src = data.src;
+        caption.textContent = data.caption;
+      }
+      lightbox.classList.add("active");
+      document.body.style.overflow = "hidden";
+    }
 
-<!-- ==================== LIGHTBOX (required) ==================== -->
-<div id="lightbox" class="lightbox" onclick="closeLightbox()">
-  <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
-  <div class="lightbox-content" onclick="event.stopPropagation()">
-    <img id="lightbox-img" src="" alt="Expanded view">
-    <div id="lightbox-caption" class="lightbox-caption"></div>
-  </div>
-</div>
+    function closeLightbox() {
+      const lightbox = document.getElementById("lightbox");
+      lightbox.classList.remove("active");
+      document.body.style.overflow = "auto";
+    }
 
-<!-- ==================== REQUIRED JS (only what these sections need) ==================== -->
-<script>
-  function togglePrompt(element){ element.classList.toggle('active'); }
-
-  const lightboxData = {
-    // Test 2
-    'test2-ghost': { src: 'images/test2-ghost.webp', caption: 'Ghost Heart Deployed (25/25)' },
-    'test2-aimage': { src: 'images/test2-aimage.webp', caption: 'AIMAGE Heart Deployed (21/25)' },
-    'test2-sora': { src: 'images/test2-sora.webp', caption: 'Sora Heart Deployed (19/25)' },
-    'test2-flux': { src: 'images/test2-flux2.webp', caption: 'Flux 2 Heart Deployed (16/25)' },
-    'test2-nano': { src: 'images/test2-nanobanana.webp', caption: 'Nano Banana Heart Deployed (15/25)' },
-    'test2-midjourney': { src: 'images/test2-midjourney.webp', caption: 'Midjourney Heart Deployed (12/25)' },
-    'test2-grok': { src: 'images/test2-grok.webp', caption: 'Grok Heart Deployed (10/25)' },
-
-    // Test 3
-    'test3-ghost': { src: 'images/test3-ghost.webp', caption: 'Ghost Shoulder Repair (25/25)' },
-    'test3-aimage': { src: 'images/test3-aimage.webp', caption: 'AIMAGE Shoulder Repair (21/25)' },
-    'test3-sora': { src: 'images/test3-sora.webp', caption: 'Sora Shoulder Repair (20/25)' },
-    'test3-midjourney': { src: 'images/test3-midjourney.webp', caption: 'Midjourney Shoulder Repair (12/25)' },
-    'test3-flux': { src: 'images/test3-flux2.webp', caption: 'Flux 2 Shoulder Repair (11/25)' },
-    'test3-nano': { src: 'images/test3-nanobanana.webp', caption: 'Nano Banana Shoulder Repair (11/25)' },
-    'test3-grok': { src: 'images/test3-grok.webp', caption: 'Grok Shoulder Repair (9/25)' },
-
-    // Test 4
-    'test4-ghost': { src: 'images/test4-ghost.webp', caption: 'Ghost IV Catheter (25/25)' },
-    'test4-sora': { src: 'images/test4-sora.webp', caption: 'Sora IV Catheter (17/25)' },
-    'test4-aimage': { src: 'images/test4-aimage.webp', caption: 'AIMAGE IV Catheter (16/25)' },
-    'test4-nano': { src: 'images/test4-nanobanana.webp', caption: 'Nano Banana IV Catheter (13/25)' },
-    'test4-flux': { src: 'images/test4-flux2.webp', caption: 'Flux 2 IV Catheter (13/25)' },
-    'test4-grok': { src: 'images/test4-grok.webp', caption: 'Grok IV Catheter (12/25)' },
-    'test4-midjourney': { src: 'images/test4-midjourney.webp', caption: 'Midjourney IV Catheter (9/25)' },
-
-    // Test 5
-    'test5-ghost': { src: 'images/test5-ghost.webp', caption: 'Ghost MOA Infographic (25/25)' },
-    'test5-sora': { src: 'images/test5-sora.webp', caption: 'Sora MOA Infographic (21/25)' },
-    'test5-flux': { src: 'images/test5-flux2.webp', caption: 'Flux 2 MOA Infographic (20/25)' },
-    'test5-aimage': { src: 'images/test5-aimage.webp', caption: 'AIMAGE MOA Infographic (18/25)' },
-    'test5-nano': { src: 'images/test5-nanobanana.webp', caption: 'Nano Banana MOA Infographic (14/25)' },
-    'test5-grok': { src: 'images/test5-grok.webp', caption: 'Grok MOA Infographic (13/25)' },
-    'test5-midjourney': { src: 'images/test5-midjourney.webp', caption: 'Midjourney MOA Infographic (11/25)' }
-  };
-
-  function openLightbox(imageId){
-    const lightbox=document.getElementById('lightbox');
-    const img=document.getElementById('lightbox-img');
-    const caption=document.getElementById('lightbox-caption');
-    const data=lightboxData[imageId];
-    if(data){ img.src=data.src; caption.textContent=data.caption; }
-    lightbox.classList.add('active');
-    document.body.style.overflow='hidden';
-  }
-
-  function closeLightbox(){
-    const lightbox=document.getElementById('lightbox');
-    lightbox.classList.remove('active');
-    document.body.style.overflow='auto';
-  }
-
-  document.addEventListener('keydown', function(e){
-    if(e.key==='Escape'){ closeLightbox(); }
-  });
-</script>
-<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") closeLightbox();
+    });
+  </script>
+</body>
+</html>
