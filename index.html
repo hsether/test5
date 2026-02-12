@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Test 5: Microcellular Healing Infographic</title>
+  <title>Test 5 — Microcellular Healing Infographic</title>
 
   <style>
-    /* Base */
+    /* ===== Minimal base ===== */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
@@ -20,25 +20,8 @@
       padding: 40px 20px;
     }
 
-    h2 {
-      font-size: 2em;
-      line-height: 1.3;
-      margin: 0 0 0.8em;
-      color: #1a1a1a;
-      border-bottom: 2px solid #e0e0e0;
-      padding-bottom: 0.3em;
-    }
-    h3 {
-      font-size: 1.5em;
-      margin: 1.3em 0 0.6em;
-      color: #2a2a2a;
-    }
-    p { margin-bottom: 1.2em; }
-    strong { font-weight: 600; color: #1a1a1a; }
-
-    /* Prompt Collapsible */
+    /* ===== Prompt Collapsible ===== */
     .prompt-container {
-      margin: 2em 0;
       border: 1px solid #ddd;
       border-radius: 8px;
       overflow: hidden;
@@ -54,7 +37,7 @@
       transition: background 0.2s;
     }
     .prompt-header:hover { background: #eef1f4; }
-    .prompt-header strong { font-size: 1.05em; }
+    .prompt-header strong { font-size: 1.05em; font-weight: 600; color: #1a1a1a; }
     .prompt-toggle {
       font-size: 1.2em;
       color: #666;
@@ -79,12 +62,12 @@
       margin: 0;
     }
 
-    /* Image Gallery */
+    /* ===== Image Gallery ===== */
     .image-gallery {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 15px;
-      margin: 2em 0;
+      margin-top: 18px;
     }
     .gallery-item {
       position: relative;
@@ -116,100 +99,82 @@
       font-weight: 600;
     }
 
-    /* Score Table */
-    .score-table-container { margin: 2em 0; overflow-x: auto; }
-    .score-table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #fff;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    .score-table th {
-      background: #2c3e50;
-      color: #fff;
-      padding: 12px 10px;
-      text-align: left;
-      font-weight: 600;
-      font-size: 0.9em;
-    }
-    .score-table td {
-      padding: 12px 10px;
-      border-bottom: 1px solid #e0e0e0;
-      font-size: 0.95em;
-    }
-    .score-table tr:last-child td { border-bottom: none; }
-    .score-table tr:nth-child(even) { background: #f9f9f9; }
-    .score-table tr:hover { background: #f5f5f5; }
-    .score-table td:first-child { font-weight: 600; color: #1a1a1a; }
-    .score-table td:last-child { font-weight: 700; color: #2c3e50; font-size: 1.1em; }
-    .ghost-row { background: #ecfdf5 !important; }
-    .ghost-row:hover { background: #d1fae5 !important; }
-
-    /* Model Notes */
-    .model-note {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 20px;
-      margin: 1.5em 0;
-    }
-    .model-note h4 {
-      margin-top: 0;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 1.2em;
-      color: #1a1a1a;
-    }
-    .model-note .score-badge {
-      background: #e2e8f0;
-      padding: 4px 10px;
-      border-radius: 4px;
-      font-size: 0.85em;
-      font-weight: 600;
-    }
-
-    /* Lightbox */
+    /* ===== Lightbox ===== */
     .lightbox {
       display: none;
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.95);
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.70);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
       z-index: 9999;
       justify-content: center;
       align-items: center;
       padding: 20px;
     }
     .lightbox.active { display: flex; }
-    .lightbox-content { max-width: 90%; max-height: 90%; position: relative; }
-    .lightbox-content img { max-width: 100%; max-height: 90vh; object-fit: contain; border-radius: 4px; }
+
+    .lightbox-content {
+      position: relative;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 18px 50px rgba(0,0,0,0.25);
+      padding: 14px;
+      max-width: min(1000px, 95vw);
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .lightbox-content img {
+      width: auto;
+      max-width: 100%;
+      max-height: 78vh;
+      object-fit: contain;
+      border-radius: 8px;
+      display: block;
+      background: #fff;
+    }
+
     .lightbox-close {
       position: absolute;
-      top: 20px; right: 30px;
-      font-size: 40px;
-      color: #fff;
+      top: 10px;
+      right: 10px;
+      font-size: 28px;
+      line-height: 1;
+      color: #111;
       cursor: pointer;
       z-index: 10000;
-      width: 50px; height: 50px;
+      width: 38px;
+      height: 38px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(0,0,0,0.5);
-      border-radius: 50%;
-      transition: background 0.2s;
+      background: rgba(255,255,255,0.9);
+      border: 1px solid rgba(0,0,0,0.10);
+      border-radius: 999px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+      transition: transform 0.15s ease, background 0.2s ease;
     }
-    .lightbox-close:hover { background: rgba(0,0,0,0.8); }
-    .lightbox-caption { color: #fff; text-align: center; margin-top: 15px; font-size: 1.1em; }
+    .lightbox-close:hover {
+      background: rgba(255,255,255,1);
+      transform: scale(1.03);
+    }
 
-    /* Responsive */
+    .lightbox-caption {
+      color: #222;
+      text-align: center;
+      margin-top: 12px;
+      font-size: 1.0em;
+    }
+
     @media (max-width: 768px) {
-      h2 { font-size: 1.6em; }
-      .score-table { font-size: 0.85em; }
-      .score-table th, .score-table td { padding: 8px 6px; }
       .image-gallery { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+      .lightbox-content { padding: 12px; }
+      .lightbox-content img { max-height: 72vh; }
     }
   </style>
 </head>
@@ -217,11 +182,6 @@
 <body>
   <div class="blog-container">
 
-    <!-- Removed:
-    <h2>Test 5: Microcellular Healing Infographic</h2>
-    -->
-
-    <!-- Optional: keep the collapsible prompt (matches your screenshot header) -->
     <div class="prompt-container" onclick="togglePrompt(this)">
       <div class="prompt-header">
         <strong>Show Prompt: Test 5, Microcellular Healing Infographic</strong>
@@ -249,125 +209,42 @@ Typography is modern, clean, perfectly spelled, and does not overlap the main il
       </div>
     </div>
 
-    <!-- Image tiles -->
     <div class="image-gallery">
       <div class="gallery-item" onclick="openLightbox('test5-ghost')">
         <img src="images/test5-ghost.webp" alt="Ghost MOA Infographic" />
         <div class="gallery-label">Ghost Human (25/25)</div>
       </div>
+
       <div class="gallery-item" onclick="openLightbox('test5-sora')">
         <img src="images/test5-sora.webp" alt="Sora MOA Infographic" />
         <div class="gallery-label">Sora (21/25)</div>
       </div>
+
       <div class="gallery-item" onclick="openLightbox('test5-flux')">
         <img src="images/test5-flux2.webp" alt="Flux 2 MOA Infographic" />
         <div class="gallery-label">Flux 2 (20/25)</div>
       </div>
+
       <div class="gallery-item" onclick="openLightbox('test5-aimage')">
         <img src="images/test5-aimage.webp" alt="AIMAGE MOA Infographic" />
         <div class="gallery-label">AIMAGE (18/25)</div>
       </div>
+
       <div class="gallery-item" onclick="openLightbox('test5-nano')">
         <img src="images/test5-nanobanana.webp" alt="Nano Banana MOA Infographic" />
         <div class="gallery-label">Nano Banana (14/25)</div>
       </div>
+
       <div class="gallery-item" onclick="openLightbox('test5-grok')">
         <img src="images/test5-grok.webp" alt="Grok MOA Infographic" />
         <div class="gallery-label">Grok (13/25)</div>
       </div>
+
       <div class="gallery-item" onclick="openLightbox('test5-midjourney')">
         <img src="images/test5-midjourney.webp" alt="Midjourney MOA Infographic" />
         <div class="gallery-label">Midjourney (11/25)</div>
       </div>
     </div>
-
-    <!-- Score table -->
-    <div class="score-table-container">
-      <table class="score-table">
-        <thead>
-          <tr>
-            <th>Generator</th>
-            <th>Prompt</th>
-            <th>Tabs</th>
-            <th>Bio Story</th>
-            <th>Clarity</th>
-            <th>Render</th>
-            <th>Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="ghost-row">
-            <td>Ghost (Human Baseline)</td>
-            <td>5</td><td>5</td><td>5</td><td>5</td><td>5</td>
-            <td><strong>25</strong></td>
-          </tr>
-          <tr>
-            <td>Sora</td>
-            <td>4</td><td>5</td><td>4</td><td>4</td><td>4</td>
-            <td><strong>21</strong></td>
-          </tr>
-          <tr>
-            <td>Flux 2</td>
-            <td>4</td><td>5</td><td>4</td><td>3</td><td>4</td>
-            <td><strong>20</strong></td>
-          </tr>
-          <tr>
-            <td>AIMAGE</td>
-            <td>3</td><td>4</td><td>4</td><td>3</td><td>4</td>
-            <td><strong>18</strong></td>
-          </tr>
-          <tr>
-            <td>Nano Banana</td>
-            <td>2</td><td>4</td><td>2</td><td>3</td><td>3</td>
-            <td><strong>14</strong></td>
-          </tr>
-          <tr>
-            <td>Grok</td>
-            <td>2</td><td>2</td><td>3</td><td>2</td><td>4</td>
-            <td><strong>13</strong></td>
-          </tr>
-          <tr>
-            <td>Midjourney</td>
-            <td>1</td><td>1</td><td>3</td><td>2</td><td>4</td>
-            <td><strong>11</strong></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Model-by-model notes -->
-    <h3>Model-by-Model Notes</h3>
-
-    <div class="model-note">
-      <h4>Ghost (Human Baseline) <span class="score-badge">25/25</span></h4>
-      <p>Worth noting: MOAs are more about artistically imagining microcellular structures than actually knowing what they look like or how they interact. Even Ghost is flying more in imagination than strict medical adherence to structure and coloring. But this is what the client wanted, and Ghost delivered what the client wanted. That's the job.</p>
-    </div>
-
-    <div class="model-note">
-      <h4>Sora <span class="score-badge">21/25</span></h4>
-      <p>Very strong on the core infographic band. The left inflammatory zone, middle proliferative zone with spindle-like cells, and right mature zone with branching vessels read cleanly. Text is clear and correctly spelled. Lost points because the prompt asked for three color-coded header tabs with circular thumbnails. This version uses clean circular labels but not the tab system or thumbnail treatment.</p>
-    </div>
-
-    <div class="model-note">
-      <h4>Flux 2 <span class="score-badge">20/25</span></h4>
-      <p>Follows the infographic "panel" idea well, including the rounded frame and the three color-coded header tabs with the correct text. The staged biological progression is present. Lost points because the composition wastes a lot of space, with the main band sitting smaller inside a large empty panel.</p>
-    </div>
-
-    <div class="model-note">
-      <h4>AIMAGE <span class="score-badge">18/25</span></h4>
-      <p>Excellent micro-structure energy and density, and it broadly communicates inflammation to remodeling. The phase labels and time ranges are correct and placed at the top without colliding heavily. Lost points because the top UI spec is not followed (no header tabs with circular thumbnails), and the scaffold fibers become visually dominant and clutter the readability.</p>
-    </div>
-
-    <div class="model-note">
-      <h4>Grok <span class="score-badge">13/25</span></h4>
-      <p>The micro environment looks plausibly "cellular," and the render itself is reasonably polished. Failed multiple hard constraints: wrong time labeling (uses "45+ Days" instead of "30-300 Days"), missing the requested header-tab system and rounded panel framing.</p>
-    </div>
-
-    <div class="model-note">
-      <h4>Midjourney <span class="score-badge">11/25</span></h4>
-      <p>Render polish and micro-fiber aesthetics are strong. Violates the biggest hard constraint: text must be perfectly spelled and exactly match. This one contains gibberish and incorrect labels, and it doesn't follow the specified header-tab system or the exact time/phase structure.</p>
-    </div>
-
   </div>
 
   <!-- Lightbox -->
@@ -385,12 +262,12 @@ Typography is modern, clean, perfectly spelled, and does not overlap the main il
     }
 
     const lightboxData = {
-      "test5-ghost": { src: "images/test5-ghost.webp", caption: "Ghost MOA Infographic (25/25)" },
-      "test5-sora": { src: "images/test5-sora.webp", caption: "Sora MOA Infographic (21/25)" },
-      "test5-flux": { src: "images/test5-flux2.webp", caption: "Flux 2 MOA Infographic (20/25)" },
-      "test5-aimage": { src: "images/test5-aimage.webp", caption: "AIMAGE MOA Infographic (18/25)" },
-      "test5-nano": { src: "images/test5-nanobanana.webp", caption: "Nano Banana MOA Infographic (14/25)" },
-      "test5-grok": { src: "images/test5-grok.webp", caption: "Grok MOA Infographic (13/25)" },
+      "test5-ghost":      { src: "images/test5-ghost.webp",      caption: "Ghost MOA Infographic (25/25)" },
+      "test5-sora":       { src: "images/test5-sora.webp",       caption: "Sora MOA Infographic (21/25)" },
+      "test5-flux":       { src: "images/test5-flux2.webp",      caption: "Flux 2 MOA Infographic (20/25)" },
+      "test5-aimage":     { src: "images/test5-aimage.webp",     caption: "AIMAGE MOA Infographic (18/25)" },
+      "test5-nano":       { src: "images/test5-nanobanana.webp", caption: "Nano Banana MOA Infographic (14/25)" },
+      "test5-grok":       { src: "images/test5-grok.webp",       caption: "Grok MOA Infographic (13/25)" },
       "test5-midjourney": { src: "images/test5-midjourney.webp", caption: "Midjourney MOA Infographic (11/25)" }
     };
 
@@ -398,11 +275,13 @@ Typography is modern, clean, perfectly spelled, and does not overlap the main il
       const lightbox = document.getElementById("lightbox");
       const img = document.getElementById("lightbox-img");
       const caption = document.getElementById("lightbox-caption");
+
       const data = lightboxData[imageId];
       if (data) {
         img.src = data.src;
         caption.textContent = data.caption;
       }
+
       lightbox.classList.add("active");
       document.body.style.overflow = "hidden";
     }
@@ -417,6 +296,9 @@ Typography is modern, clean, perfectly spelled, and does not overlap the main il
       if (e.key === "Escape") closeLightbox();
     });
   </script>
-<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
+
+  <!-- Keep if you’re embedding this page in an iframe -->
+  <script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
 </body>
 </html>
+
