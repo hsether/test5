@@ -1,0 +1,2077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Can AI Actually Make Medically Accurate Images Yet?</title>
+    <style>
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.7;
+            color: #333;
+            background: #fff;
+        }
+        .blog-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        h1 {
+            font-size: 2.5em;
+            line-height: 1.2;
+            margin-bottom: 0.3em;
+            color: #1a1a1a;
+        }
+        .subtitle {
+            font-size: 1.4em;
+            color: #64748b;
+            font-style: italic;
+            margin-bottom: 1.5em;
+            font-weight: 400;
+        }
+        h2 {
+            font-size: 2em;
+            line-height: 1.3;
+            margin: 1.5em 0 0.8em;
+            color: #1a1a1a;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 0.3em;
+        }
+        h3 {
+            font-size: 1.5em;
+            margin: 1.3em 0 0.6em;
+            color: #2a2a2a;
+        }
+        h4 {
+            font-size: 1.2em;
+            margin: 1em 0 0.5em;
+            color: #333;
+        }
+        p {
+            margin-bottom: 1.2em;
+        }
+        strong {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        ul, ol {
+            margin: 1em 0 1.5em 2em;
+        }
+        li {
+            margin-bottom: 0.5em;
+        }
+        a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        /* Prompt Collapsible Section */
+        .prompt-container {
+            margin: 2em 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .prompt-header {
+            background: #f6f8fa;
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            transition: background 0.2s;
+        }
+        .prompt-header:hover {
+            background: #eef1f4;
+        }
+        .prompt-header strong {
+            font-size: 1.05em;
+        }
+        .prompt-toggle {
+            font-size: 1.2em;
+            color: #666;
+            transition: transform 0.3s;
+        }
+        .prompt-container.active .prompt-toggle {
+            transform: rotate(180deg);
+        }
+        .prompt-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+        .prompt-container.active .prompt-content {
+            max-height: 2000px;
+        }
+        .prompt-content pre {
+            background: #1e293b;
+            padding: 20px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: #e2e8f0;
+            margin: 0;
+        }
+        /* Score Table */
+        .score-table-container {
+            margin: 2em 0;
+            overflow-x: auto;
+        }
+        .score-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .score-table th {
+            background: #2c3e50;
+            color: #fff;
+            padding: 12px 10px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+        .score-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 0.95em;
+        }
+        .score-table tr:last-child td {
+            border-bottom: none;
+        }
+        .score-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        .score-table tr:hover {
+            background: #f5f5f5;
+        }
+        .score-table td:first-child {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        .score-table td:last-child {
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+        .ghost-row {
+            background: #ecfdf5 !important;
+        }
+        .ghost-row:hover {
+            background: #d1fae5 !important;
+        }
+        /* Image Gallery */
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 2em 0;
+        }
+        .gallery-item {
+            position: relative;
+            cursor: pointer;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .gallery-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+        .gallery-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            color: #fff;
+            padding: 30px 10px 10px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        /* Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .lightbox.active {
+            display: flex;
+        }
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        }
+        .lightbox-content img {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 4px;
+        }
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 40px;
+            color: #fff;
+            cursor: pointer;
+            z-index: 10000;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.5);
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+        .lightbox-close:hover {
+            background: rgba(0,0,0,0.8);
+        }
+        .lightbox-caption {
+            color: #fff;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 1.1em;
+        }
+        /* Info Box */
+        .info-box {
+            background: #e8f4fd;
+            border-left: 4px solid #2196F3;
+            padding: 20px;
+            margin: 2em 0;
+            border-radius: 0 4px 4px 0;
+        }
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            margin: 2em 0;
+            border-radius: 0 4px 4px 0;
+        }
+        .success-box {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            padding: 20px;
+            margin: 2em 0;
+            border-radius: 0 4px 4px 0;
+        }
+        /* Model Notes */
+        .model-note {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 1.5em 0;
+        }
+        .model-note h4 {
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .model-note .score-badge {
+            background: #e2e8f0;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        /* Summary table */
+        .summary-table td:last-child {
+            font-size: 1.2em;
+        }
+        /* Previous posts */
+        .prev-posts {
+            background: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 2em 0;
+        }
+        .prev-posts h4 {
+            margin-top: 0;
+        }
+        .prev-posts ul {
+            margin-bottom: 0;
+        }
+        /* Author Bio */
+        .author-bio {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 12px;
+            margin: 2em 0;
+            border: 1px solid #cbd5e1;
+        }
+        .author-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #2c3e50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 2em;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .author-info h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.3em;
+        }
+        .author-info .author-title {
+            color: #64748b;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+        .author-links {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .author-links a {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.85em;
+            transition: all 0.2s;
+        }
+        .author-links a:hover {
+            background: #2563eb;
+            color: #fff;
+            border-color: #2563eb;
+            text-decoration: none;
+        }
+        /* Share Buttons */
+        .share-buttons {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 1.5em 0;
+            padding: 15px 0;
+            border-top: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .share-buttons span {
+            font-weight: 600;
+            color: #64748b;
+            font-size: 0.9em;
+        }
+        .share-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1.1em;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+        }
+        .share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            text-decoration: none;
+        }
+        .share-btn.twitter { background: #1da1f2; }
+        .share-btn.linkedin { background: #0077b5; }
+        .share-btn.facebook { background: #1877f2; }
+        .share-btn.reddit { background: #ff4500; }
+        .share-btn.email { background: #64748b; }
+        .share-btn.copy { background: #10b981; cursor: pointer; }
+        /* Contestants Grid */
+        .contestants-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 2em 0;
+        }
+        .contestant-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 20px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            transition: box-shadow 0.2s, transform 0.2s;
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+        }
+        .contestant-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
+            text-decoration: none;
+        }
+        .contestant-card.ghost-card {
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            border-color: #10b981;
+        }
+        .contestant-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: contain;
+            background: #f8fafc;
+            padding: 5px;
+            flex-shrink: 0;
+        }
+        .contestant-info h4 {
+            margin: 0 0 5px 0;
+            font-size: 1.05em;
+            color: #2563eb;
+        }
+        .contestant-info p {
+            margin: 0;
+            font-size: 0.9em;
+            color: #64748b;
+            line-height: 1.4;
+        }
+        /* AIMAGE Examples */
+        .aimage-examples {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 2em 0;
+        }
+        .aimage-example {
+            text-align: center;
+        }
+        .aimage-example img {
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 10px;
+        }
+        .aimage-example p {
+            font-size: 0.9em;
+            color: #64748b;
+            margin: 0;
+        }
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+            h2 {
+                font-size: 1.6em;
+            }
+            .score-table {
+                font-size: 0.85em;
+            }
+            .score-table th,
+            .score-table td {
+                padding: 8px 6px;
+            }
+            .image-gallery {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 10px;
+            }
+            .author-bio {
+                flex-direction: column;
+                text-align: center;
+            }
+            .author-links {
+                justify-content: center;
+            }
+            .share-buttons {
+                justify-content: center;
+            }
+            .contestants-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="blog-container">
+
+    <h1>Can AI Actually Make Medically Accurate Images Yet?</h1>
+    <p class="subtitle">Spoiler: My Job Is Probably Safe... For Now</p>
+
+    <!-- Author Bio -->
+    <div class="author-bio">
+        <a href="https://www.ghostproductions.com/about-us#Meet-OUR-TEAM?skkblog" target="_blank"><img src="images/stephan-kuslich-avatar.webp" alt="Stephan Kuslich" class="author-avatar" style="border-radius: 50%; object-fit: cover;"></a>
+        <div class="author-info">
+            <h3>Stephan Kuslich</h3>
+            <div class="author-title">Founder & Chief Strategy Officer at Ghost Medical</div>
+            <div class="author-links">
+                <a href="https://www.linkedin.com/in/stephan-kuslich-36062a6/" target="_blank">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                    LinkedIn
+                </a>
+                <a href="https://www.ghostmedical.com" target="_blank">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm-1 17.5h-3v-9h3v9zm-1.5-10.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.784 1.764-1.75 1.764zM18 17.5h-3v-4.5c0-1.381-1.119-2.5-2.5-2.5S10 11.619 10 13v4.5H7v-9h3v1.236c.586-.907 1.56-1.486 2.65-1.486 1.795 0 3.35 1.471 3.35 3.5v5.75z"/></svg>
+                    Ghost Medical
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Buttons -->
+    <div class="share-buttons">
+        <span>Share this:</span>
+        <a href="https://twitter.com/intent/tweet?text=Can%20AI%20Actually%20Make%20Medically%20Accurate%20Images%20Yet%3F&url=" class="share-btn twitter" title="Share on Twitter/X" target="_blank">
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=" class="share-btn linkedin" title="Share on LinkedIn" target="_blank">
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        </a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=" class="share-btn facebook" title="Share on Facebook" target="_blank">
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        </a>
+        <a href="https://reddit.com/submit?url=&title=Can%20AI%20Actually%20Make%20Medically%20Accurate%20Images%20Yet%3F" class="share-btn reddit" title="Share on Reddit" target="_blank">
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg>
+        </a>
+        <a href="mailto:?subject=Can%20AI%20Actually%20Make%20Medically%20Accurate%20Images%20Yet%3F&body=Check%20out%20this%20article%3A%20" class="share-btn email" title="Share via Email">
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        </a>
+        <div class="share-btn copy" onclick="copyLink()" title="Copy Link">
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+        </div>
+    </div>
+
+    <p>A few years ago, I did something mildly masochistic: I spent weeks torturing AI image generators with medical illustration prompts to see if they could produce anything remotely usable. The results were... let's call them "educational." I documented the carnage in a series of blog posts that somehow racked up over <strong>500,000 reads</strong>, which tells me two things: (1) a lot of people are curious about this topic, and (2) a lot of those people were desperately hoping I'd discovered the secret to making AI spit out medically accurate images so they wouldn't have to hire actual medical illustrators.</p>
+
+    <p>To the dismay of the many who contacted me, the results were far from medically accurate.</p>
+
+    <p>Back then, AI image generators could make some visually interesting stuff, if your definition of "interesting" includes six-fingered surgeons, anatomically impossible spines, and heart valves that looked like they were designed by someone who'd only ever seen a heart emoji. The tools were fun for concepting and mood boards, but if you needed something a surgeon could actually use in a presentation without getting laughed out of the OR? Not happening.</p>
+
+    <p>But that was 2024. It's now 2026, and the AI hype cycle has completed several more rotations. Every other week, someone announces a "breakthrough" model that's supposedly going to revolutionize visual content creation. So I figured it was time to run the experiment again. Not because I enjoy testing whether robots are gunning for my job (though the existential dread does keep things spicy), but because a lot of people keep asking: <strong>Has AI gotten good enough yet?</strong></p>
+
+    <p>The answer, as you'll see, is nuanced. Which is a polite way of saying "mostly no, but with some interesting exceptions."</p>
+
+    <div class="prev-posts">
+        <h4>Previous Posts in This Series</h4>
+        <ul>
+            <li><a href="https://www.ghostproductions.com/news/how-to-use-ai-to-make-stunning-medical-illustrations">How to Use AI to Make Stunning Medical Illustrations</a> - Practical guide to tools like Midjourney, Stable Diffusion, and DALL-E 2</li>
+            <li><a href="https://www.ghostproductions.com/news/is-midjourney-ai-smart-enough-to-make-medical-art">Is Midjourney AI Smart Enough to Make Medical Art?</a> - Exhaustive testing with failures on anatomy, banned terms, and more</li>
+            <li><a href="https://www.ghostproductions.com/news/ai-image-generator-prompt-references-for-medical-art">AI Image Generator Prompt References for Medical Art</a> - Handy resource for crafting better prompts</li>
+        </ul>
+    </div>
+
+    <h2>Why This Matters (And Why I'm Doing This To Myself)</h2>
+
+    <p>Here's the thing: Ghost Medical isn't some random graphics shop dabbling in medical content. We make anatomically correct, functionally accurate, clinically defensible medical illustrations for surgeons, engineers, regulatory teams, and medical device companies. Our clients don't care if something "looks medical." They care if it's <strong>correct</strong>. If a valve doesn't seat properly in an annulus, if a tendon repair construct can't actually bear load, if cellular mechanisms are anatomically nonsensical, the image is worthless. Worse than worthless, actually. It's a liability.</p>
+
+    <p>So when I test AI image generators, I'm not looking for "cool medical vibes." I'm asking: <strong>Could this pass clinical review? Could a surgeon use this in a training deck? Could a regulatory team submit this to the FDA without getting roasted?</strong></p>
+
+    <p>That's a much higher bar than "wow, that kinda looks like a heart."</p>
+
+    <h2>The Lineup: Who's Fighting For Their AI Lives Today</h2>
+
+    <p>I'm testing seven generators, plus one human baseline (because someone has to remind these bots what "correct" actually looks like). Here's the roster:</p>
+
+    <div class="contestants-grid">
+        <a href="https://www.midjourney.com" target="_blank" class="contestant-card">
+            <img src="images/logo-midjourney.webp" alt="Midjourney" class="contestant-logo">
+            <div class="contestant-info">
+                <h4>Midjourney</h4>
+                <p>The one I tortured extensively back in 2024. History matters.</p>
+            </div>
+        </a>
+        <a href="https://sora.com" target="_blank" class="contestant-card">
+            <img src="images/logo-sora.webp" alt="Sora" class="contestant-logo">
+            <div class="contestant-info">
+                <h4>Sora</h4>
+                <p>OpenAI's video-to-image darling. Finally taking visuals seriously.</p>
+            </div>
+        </a>
+        <a href="https://gemini.google.com" target="_blank" class="contestant-card">
+            <img src="images/logo-nanobanana.webp" alt="Nano Banana" class="contestant-logo">
+            <div class="contestant-info">
+                <h4>Gemini / Nano Banana</h4>
+                <p>Google's offering, apparently named by someone who lost a bet.</p>
+            </div>
+        </a>
+        <a href="https://grok.x.ai" target="_blank" class="contestant-card">
+            <img src="images/logo-grok.webp" alt="Grok" class="contestant-logo">
+            <div class="contestant-info">
+                <h4>Grok</h4>
+                <p>Best known for making Elon Musk memes. We'll give it a shot anyway.</p>
+            </div>
+        </a>
+        <a href="https://flux-ai.io" target="_blank" class="contestant-card">
+            <img src="images/logo-flux2.webp" alt="Flux 2" class="contestant-logo">
+            <div class="contestant-info">
+                <h4>Flux 2</h4>
+                <p>The model that every AI enthusiast insists will "totally nail medical accuracy this time."</p>
+            </div>
+        </a>
+        <a href="https://www.ghostproductions.com/image-tags/medical-illustration?skk?blog" target="_blank" class="contestant-card">
+            <img src="images/logo-aimage.webp" alt="AIMAGE" class="contestant-logo">
+            <div class="contestant-info">
+                <h4>AIMAGE</h4>
+                <p>Ghost's own AI medical image generator, trained on thousands of Ghost-created illustrations. Domain-tuned, not vibes-tuned.</p>
+            </div>
+        </a>
+        <a href="https://www.ghostproductions.com?skkblog" target="_blank" class="contestant-card ghost-card">
+            <img src="images/logo-ghost.webp" alt="Ghost Medical" class="contestant-logo">
+            <div class="contestant-info">
+                <h4>Ghost Human Baseline</h4>
+                <p>Made by actual humans using Maya, Redshift, Photoshop, Houdini, Substance, and about a dozen other tools that reward anatomical knowledge over clever prompting.</p>
+            </div>
+        </a>
+    </div>
+
+    <div class="warning-box">
+        <strong>Stable Diffusion: Disqualified</strong><br>
+        We excluded Stable Diffusion from this test because it constantly refused to render requested images, flagging them as "too graphic." Medically accurate imagery is not offensive or shameful. We don't have time for pearl-clutching algorithms. Until this AI matures enough to realize that nothing is offensive about medically accurate imagery, we won't even consider it.
+    </div>
+
+    <h2>The Rules: No Cheating, No Excuses</h2>
+
+    <p>Before anyone accuses us of moving goalposts, here's how this test works:</p>
+
+    <p>Every generator gets the <strong>exact same prompts</strong>. No prompt tuning. No retries. No "well, it did better on the third attempt." One shot. Same instructions. Same expectations.</p>
+
+    <p>Each system was asked to produce five images:</p>
+
+    <ol>
+        <li>A stand-alone medical device (transcatheter aortic valve)</li>
+        <li>The same device deployed inside heart anatomy</li>
+        <li>An orthopedic tendon repair construct on a humeral head</li>
+        <li>An IV catheter with labeled callouts</li>
+        <li>A microcellular mechanism-of-action diagram showing healing over time</li>
+    </ol>
+
+    <p>Every AI result gets compared against a real Ghost-produced medical illustration, the kind our clients actually pay for and use in FDA submissions, surgical training, and investor decks.</p>
+
+    <p>The grading criteria are simple and unforgiving:</p>
+
+    <ul>
+        <li><strong>Prompt adherence</strong> - Did it follow instructions, or did it freestyle?</li>
+        <li><strong>Callouts and labels</strong> - Spelled correctly? Placed logically? Or gibberish?</li>
+        <li><strong>Medical accuracy</strong> - Anatomically correct, or anatomically "meh"?</li>
+        <li><strong>Conceptual accuracy</strong> - Does the construct make functional sense, or just look cool?</li>
+        <li><strong>Artistic clarity and polish</strong> - Is it presentation-ready, or does it need human cleanup?</li>
+    </ul>
+
+    <p>I briefly considered scoring "time to completion," but that idea lasted about ten seconds. Every AI delivered its final image in under a minute, which made the metric meaningless. Speed is the one category where AI already wins by a landslide.</p>
+
+    <p>For context, the Ghost baseline images took <strong>weeks</strong> to produce. That matters. When AI can pass a Turing test against a world-class medical illustration team, its speed alone will be enough to seriously disrupt this field. We're not pretending otherwise. It's only a matter of time before many medical illustrators are pushed into roles that look more like prompt writing and image verification than traditional illustration.</p>
+
+    <p>That reality isn't something we take lightly.</p>
+
+    <p>Best case scenario: We're genuinely surprised by how far the technology has come.</p>
+
+    <p>Worst case: We get a very clear reminder of the difference between "looks medical" and "<strong>is</strong> medical."</p>
+
+    <p>Let's find out.</p>
+
+    <!-- ==================== TEST 0 ==================== -->
+
+    <h2>Test 0: The Anatomy Poster Warm-Up (Or: Let's See If AI Can Even Handle The Easy Stuff)</h2>
+
+    <p>Before jumping straight into the complex controlled tests, we decided to start with a warm-up. A very simple prompt. Something every image generator should theoretically excel at.</p>
+
+    <p>Every one of these models has been trained on anatomy diagrams. From public-domain Da Vinci drawings to modern textbook illustrations inspired by artists like Frank Netter. If an AI struggles here, that tells us a lot before we even introduce devices, pathology, or mechanisms of action.</p>
+
+    <p>Each bot was given the exact same prompt, reproduced below without modification.</p>
+
+    <div class="prompt-container" onclick="togglePrompt(this)">
+        <div class="prompt-header">
+            <strong>Show Prompt: Test 0, Simple Anatomy Poster</strong>
+            <span class="prompt-toggle">&#9660;</span>
+        </div>
+        <div class="prompt-content">
+            <pre>Create a square-format human anatomy educational diagram that prioritizes anatomical accuracy, information density, and efficient use of space.
+
+The image must be a multi-panel medical diagram filling at least 85 percent of the square canvas, with minimal empty margins and no decorative borders.
+
+At the top center, include the title "HUMAN ANATOMY" in clear, high-contrast lettering that is readable at small sizes.
+
+At the center of the image, place a front-facing adult male human figure with skin removed to show the muscular system.
+
+The figure should stand upright with arms relaxed at the sides and feet together.
+
+Muscles must be anatomically correct, clearly separated, and accurately proportioned.
+
+The central figure should be the largest and most visually dominant element.
+
+Surrounding the central figure, arrange compact, clearly separated panels showing the following systems, all fully visible and not cropped:
+
+• Brain, shown separately with major regions identifiable
+• Skeletal system, full front-facing skeleton
+• Heart, standalone with major vessels
+• Digestive system, from esophagus to intestines
+• Eye, cross-sectional view with internal structures
+• Cardiovascular system, heart with arteries and veins
+• Urinary system, kidneys, ureters, bladder, urethra
+• Secondary muscular detail panel highlighting named muscle groups
+
+Each panel must include legible labels with thin leader lines pointing precisely to anatomical structures.
+
+Labels must use correct anatomical terminology with no misspellings and no invented anatomy.
+
+The visual style should be clear medical textbook illustration, flat lighting, neutral background, and high clarity.
+
+Do not emphasize paper texture, aging, folds, stains, decorative borders, or faux historical elements.
+
+The background must remain visually quiet and must not compete with the anatomy.
+
+The goal is a reference-quality anatomy chart, optimized for clarity, accuracy, and efficient use of square space.</pre>
+        </div>
+    </div>
+
+    <h3>Why Ghost and AIMAGE Sat This One Out</h3>
+
+    <p><strong>Ghost Human Baseline: No poster, on purpose.</strong></p>
+
+    <p>This warm-up prompt is the kind of assignment AI loves, and human studios should refuse unless a client is paying for it. Ghost is a production shop with deadlines, reviews, and client priorities. Spending real artist hours to create a polished, information-dense anatomy poster purely for a benchmark would be an expensive distraction from billable work. That's the core advantage AI keeps pressing on: <strong>speed</strong>.</p>
+
+    <p>AI can generate a dozen poster variations in minutes, while a human team would need hours or days to do it properly, and then still go through the usual accuracy review cycle. That's exactly how AI starts winning the early rounds. It gets you something usable fast, even if it's not perfect. Once these tools reliably pass a "medical accuracy Turing test," where the output is indistinguishable from expert work to the non-expert viewer, most human artists won't be replaced outright. They'll be pushed upstream into higher leverage roles like creative direction, prompt and pipeline design, and downstream into quality control, fact-checking, and correction passes. In other words: fewer people making images from scratch, more people supervising, correcting, and approving.</p>
+
+    <p><strong>AIMAGE: No poster because it's not trained for this format.</strong></p>
+
+    <p>AIMAGE is not a general-purpose, do-anything image generator. It depends on Ghost's reference library and training data. If Ghost hasn't fed it thousands of examples of dense, labeled, textbook-style anatomy posters, then this specific assignment is outside its learned distribution. It might produce something poster-like, but it would be guesswork and style imitation rather than a confident reproduction of a familiar format.</p>
+
+    <p>That limitation is important, and it's also fair. Domain-tuned models like AIMAGE are usually excellent inside their lane and unremarkable outside it. So for this test, AIMAGE sat out because the goal was to stress-test general instruction following, layout discipline, and label behavior on a poster format that wasn't part of its training foundation.</p>
+
+    <p>So the warm-up results are "AI vs AI" by design. Not because Ghost couldn't make the poster, but because making it would miss the point. The whole reason this comparison matters is that AI can afford to do experiments humans can't justify doing.</p>
+
+    <h3>Test 0 Results: Anatomy Poster Warm-Up</h3>
+
+    <div class="info-box">
+        <strong>Gallery Note:</strong> Click any image below to expand and examine label accuracy in detail.
+    </div>
+
+    <div class="image-gallery">
+        <div class="gallery-item" onclick="openLightbox('test0-nano')">
+            <img src="images/test0-nanobanana.webp" alt="Nano Banana Anatomy Poster">
+            <div class="gallery-label">Nano Banana (17/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test0-sora')">
+            <img src="images/test0-sora.webp" alt="Sora Anatomy Poster">
+            <div class="gallery-label">Sora (16/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test0-flux')">
+            <img src="images/test0-flux2.webp" alt="Flux 2 Anatomy Poster">
+            <div class="gallery-label">Flux 2 (15/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test0-grok')">
+            <img src="images/test0-grok.webp" alt="Grok Anatomy Poster">
+            <div class="gallery-label">Grok (15/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test0-midjourney')">
+            <img src="images/test0-midjourney.webp" alt="Midjourney Anatomy Poster">
+            <div class="gallery-label">Midjourney (13/25)</div>
+        </div>
+    </div>
+
+    <div class="score-table-container">
+        <table class="score-table">
+            <thead>
+                <tr>
+                    <th>Generator</th>
+                    <th>Prompt</th>
+                    <th>Labels</th>
+                    <th>Medical</th>
+                    <th>Concept</th>
+                    <th>Polish</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Gemini / Nano Banana</td>
+                    <td>3</td>
+                    <td>3</td>
+                    <td>3</td>
+                    <td>4</td>
+                    <td>4</td>
+                    <td><strong>17</strong></td>
+                </tr>
+                <tr>
+                    <td>Sora</td>
+                    <td>4</td>
+                    <td>3</td>
+                    <td>3</td>
+                    <td>4</td>
+                    <td>4</td>
+                    <td><strong>16</strong></td>
+                </tr>
+                <tr>
+                    <td>Flux 2</td>
+                    <td>3</td>
+                    <td>2</td>
+                    <td>3</td>
+                    <td>4</td>
+                    <td>3</td>
+                    <td><strong>15</strong></td>
+                </tr>
+                <tr>
+                    <td>Grok</td>
+                    <td>3</td>
+                    <td>1</td>
+                    <td>3</td>
+                    <td>4</td>
+                    <td>4</td>
+                    <td><strong>15</strong></td>
+                </tr>
+                <tr>
+                    <td>Midjourney</td>
+                    <td>3</td>
+                    <td>1</td>
+                    <td>2</td>
+                    <td>3</td>
+                    <td>4</td>
+                    <td><strong>13</strong></td>
+                </tr>
+                <tr>
+                    <td>AIMAGE (Ghost)</td>
+                    <td colspan="6" style="text-align: center; color: #666;">Did not participate (not trained for this format)</td>
+                </tr>
+                <tr>
+                    <td>Ghost Human Baseline</td>
+                    <td colspan="6" style="text-align: center; color: #666;">Did not participate (not a billable project)</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>Quick Takeaways</h3>
+
+    <ul>
+        <li><strong>Gemini / Nano Banana (17/25)</strong> took the top spot in this warm-up because it balanced structure, legibility, and overall clarity. It still wasn't "textbook correct" in a strict sense, but it held together better than the rest.</li>
+        <li><strong>Sora (16/25)</strong> surprised me here. It followed the assignment cleanly and produced the most presentation-ready "poster" feel of the group, with fewer layout failures than expected.</li>
+        <li><strong>Flux 2 (15/25)</strong> looked solid and coherent, especially on general anatomical form, but it lost points on the label system. It was close to being great, but not consistently reliable.</li>
+        <li><strong>Grok (15/25)</strong> did well on overall concept and polish, but the labels were the weak point. It produced medical-looking content that would still need a human to correct and validate.</li>
+        <li><strong>Midjourney (13/25)</strong> still wins on aesthetics, but it continues to struggle with the exact thing this test is designed to punish: precise labeling and dependable anatomical correctness. It's excellent for concept exploration, but not trustworthy for "educational poster" output without significant human cleanup.</li>
+    </ul>
+
+    <p>This warm-up doesn't tell us who's best at procedures, devices, or pathology. It tells us who can follow instructions under constraints, handle structured medical layouts, and avoid text hallucinations when the image is mostly labels and anatomy. That's why we start here.</p>
+
+    <p>Next up, we move to the first true Ghost baseline comparisons, where the models have to match real production-quality medical renders rather than just "poster style."</p>
+
+    <!-- ==================== TEST 1 ==================== -->
+
+    <h2>Test 1: Isolated Transcatheter Valve on White (The "Product Shot" Test)</h2>
+
+    <p>This is the "product shot" test. If an image generator can't reliably produce a clean, accurate, photoreal device render on white, it's not ready for serious medtech workflows where device visuals must be:</p>
+
+    <ul>
+        <li><strong>Unambiguous and precise</strong> - shape, proportions, materials, construction details</li>
+        <li><strong>Reusable across formats</strong> - web, decks, IFU-style visuals, sales sheets</li>
+        <li><strong>Easy to art-direct</strong> - consistent angles, lighting, clean background, repeatability</li>
+        <li><strong>Low risk</strong> - no anatomical hallucinations, no stray parts, no nonsense geometry</li>
+    </ul>
+
+    <p>This test also isolates the generator's ability to follow instructions without leaning on "medical-looking" context. No blood, no tissue, no anatomy, no drama. Just the device, rendered correctly.</p>
+
+    <h3>What We're Looking For</h3>
+
+    <ul>
+        <li>Correct "TAVR-like" construction cues: metal lattice stent, fabric skirt, three symmetric leaflets, plausible commissure posts and top-edge wire detail</li>
+        <li>High quality product-render lighting: controlled reflections, realistic materials, crisp edges</li>
+        <li>Strict prompt adherence: isolated on pure white, centered, no labels, no extra objects</li>
+    </ul>
+
+    <div class="prompt-container" onclick="togglePrompt(this)">
+        <div class="prompt-header">
+            <strong>Show Prompt: Test 1, Isolated TAVR on White</strong>
+            <span class="prompt-toggle">&#9660;</span>
+        </div>
+        <div class="prompt-content">
+            <pre>High resolution, photorealistic 3D medical product render of a balloon expandable transcatheter aortic valve prosthesis, isolated on a pure white seamless background with a very soft gray ground shadow. Centered, three quarter front view, slightly above eye level.
+
+The device is a short cylindrical stent frame made of thin metallic struts in a diamond lattice pattern, brushed silver with clean specular highlights. At the base is a thick off white fabric sealing skirt that wraps the circumference, with a subtle woven texture and a scalloped lower edge. Inside the stent are three pale cream bioprosthetic leaflets, slightly translucent, with realistic thickness and soft folds, arranged symmetrically and open in a relaxed neutral position.
+
+Include thin dark gray commissure posts and small wire details at the top edge. Clean studio lighting, crisp focus, no text, no watermark, no logo, no hands, no anatomy.</pre>
+        </div>
+    </div>
+
+    <div class="image-gallery">
+        <div class="gallery-item" onclick="openLightbox('test1-ghost')">
+            <img src="images/test1-ghost.webp" alt="Ghost TAVR">
+            <div class="gallery-label">Ghost Human (25/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test1-aimage')">
+            <img src="images/test1-aimage.webp" alt="AIMAGE TAVR">
+            <div class="gallery-label">AIMAGE (22/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test1-sora')">
+            <img src="images/test1-sora.webp" alt="Sora TAVR">
+            <div class="gallery-label">Sora (21/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test1-flux')">
+            <img src="images/test1-flux2.webp" alt="Flux 2 TAVR">
+            <div class="gallery-label">Flux 2 (15/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test1-midjourney')">
+            <img src="images/test1-midjourney.webp" alt="Midjourney TAVR">
+            <div class="gallery-label">Midjourney (10/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test1-nano')">
+            <img src="images/test1-nanobanana.webp" alt="Nano Banana TAVR">
+            <div class="gallery-label">Nano Banana (9/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test1-grok')">
+            <img src="images/test1-grok.webp" alt="Grok TAVR">
+            <div class="gallery-label">Grok (8/25)</div>
+        </div>
+    </div>
+
+    <div class="score-table-container">
+        <table class="score-table">
+            <thead>
+                <tr>
+                    <th>Generator</th>
+                    <th>Prompt</th>
+                    <th>Labels</th>
+                    <th>Medical</th>
+                    <th>Concept</th>
+                    <th>Polish</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="ghost-row">
+                    <td>Ghost (Human Baseline)</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td><strong>25</strong></td>
+                </tr>
+                <tr>
+                    <td>AIMAGE (Ghost fine-tune)</td>
+                    <td>4</td>
+                    <td>5</td>
+                    <td>4</td>
+                    <td>5</td>
+                    <td>4</td>
+                    <td><strong>22</strong></td>
+                </tr>
+                <tr>
+                    <td>Sora</td>
+                    <td>4</td>
+                    <td>5</td>
+                    <td>4</td>
+                    <td>4</td>
+                    <td>4</td>
+                    <td><strong>21</strong></td>
+                </tr>
+                <tr>
+                    <td>Flux 2</td>
+                    <td>3</td>
+                    <td>5</td>
+                    <td>1</td>
+                    <td>2</td>
+                    <td>4</td>
+                    <td><strong>15</strong></td>
+                </tr>
+                <tr>
+                    <td>Midjourney</td>
+                    <td>2</td>
+                    <td>5</td>
+                    <td>1</td>
+                    <td>1</td>
+                    <td>1</td>
+                    <td><strong>10</strong></td>
+                </tr>
+                <tr>
+                    <td>Nano Banana</td>
+                    <td>2</td>
+                    <td>2</td>
+                    <td>2</td>
+                    <td>2</td>
+                    <td>1</td>
+                    <td><strong>9</strong></td>
+                </tr>
+                <tr>
+                    <td>Grok</td>
+                    <td>2</td>
+                    <td>5</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>1</td>
+                    <td><strong>8</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>Model-by-Model Notes</h3>
+
+    <div class="model-note">
+        <h4>Ghost (Human Baseline) <span class="score-badge">25/25</span></h4>
+        <p>This is the only entry that completely matches all the details of the prompt. It perfectly matches the HLT device because it's based on the same CAD model used to manufacture the device. The valve proportions, leaflet shape, and overall construction look coherent and "designed," not improvised. This is what "production-correct" looks like.</p>
+    </div>
+
+    <div class="model-note">
+        <h4>AIMAGE <span class="score-badge">22/25</span></h4>
+        <p>Closest to a "trained junior Ghost artist." Still drifts in subtle engineering details, but it stays in the correct object category and usually maintains plausible proportions. This is likely because it was the only AI that has actually been trained on the exact same and similar transcatheter aortic valve prosthesis that Ghost used to render their image.</p>
+    </div>
+
+    <div class="model-note">
+        <h4>Sora <span class="score-badge">21/25</span></h4>
+        <p>Strong renderer and decent coherence, but can still average details into "generic medical device." Often needs tighter constraints to stop it from inventing convenience geometry. Likely, Sora was trained on similar devices, perhaps even Ghost's own images.</p>
+    </div>
+
+    <div class="model-note">
+        <h4>Flux 2 <span class="score-badge">15/25</span></h4>
+        <p><strong>Main failure:</strong> Overall device shape and proportions are off enough to break physical plausibility. If the implant's profile would not seat correctly at the annulus or is dimensionally nonsensical, it gets a 1 in Medical and Device Accuracy, even if it looks pretty. This is the classic "photoreal but wrong object" trap.</p>
+    </div>
+
+    <div class="model-note">
+        <h4>Midjourney <span class="score-badge">10/25</span></h4>
+        <p>Still behaves like "stylized product concept," not "specific implant." It can be visually pleasing while being structurally useless.</p>
+    </div>
+
+    <div class="model-note">
+        <h4>Grok <span class="score-badge">8/25</span></h4>
+        <p>Rendered a fan instead of a valve. Immediate disqualification on correctness. This is what happens when an AI confidently generates the wrong object entirely.</p>
+    </div>
+
+    <div class="warning-box">
+        <strong>The takeaway:</strong> "Flux can render something that looks like a high-end medical device photo, but when you compare it to a real TAVR prosthesis, the proportions are so wrong it wouldn't even fit in the aorta, which defeats the entire purpose of medical illustration."
+    </div>
+
+    <!-- ==================== TEST 2 ==================== -->
+
+    <h2>Test 2: Valve Deployed Inside Heart Cutaway</h2>
+
+    <p>This test matters because it's where "medical-looking" usually collapses into "medically wrong."</p>
+
+    <p>A standalone device render can get away with approximate geometry. Once you place that device in the aortic annulus, you have constraints that are hard to fake:</p>
+
+    <ul>
+        <li><strong>Anatomy and viewpoint:</strong> You asked for a surgical cutaway from inside the heart looking toward the aortic root, with specific lumen openings and thick, moist endocardial tissue.</li>
+        <li><strong>Device plausibility:</strong> A TAVR needs correct overall proportions, realistic stent lattice behavior, a believable skirt-tissue interface, and leaflets that look like leaflets, not random folds.</li>
+        <li><strong>Procedure cues:</strong> Catheter position, marker rings, and a continuous guidewire are subtle but important. When those are missing or nonsensical, it's a red flag that the model is guessing.</li>
+        <li><strong>Fit:</strong> If the valve would not physically seat at the annulus, it fails the clinical plausibility test even if the render is pretty.</li>
+    </ul>
+
+    <p>Ghost is the target here because the prompt was written from the Ghost image. So Ghost is the gold standard for adherence, and by definition it gets full points.</p>
+
+    <div class="prompt-container" onclick="togglePrompt(this)">
+        <div class="prompt-header">
+            <strong>Show Prompt: Test 2, Valve Deployed in Heart</strong>
+            <span class="prompt-toggle">&#9660;</span>
+        </div>
+        <div class="prompt-content">
+            <pre>High resolution, photorealistic 3D medical illustration of a balloon-expandable transcatheter aortic valve prosthesis deployed inside a surgical cutaway of the human heart.
+
+The view is from inside the left ventricle looking toward the aortic root. The heart tissue shows thick, moist endocardial surfaces with realistic texture and coloration. The valve is seated at the aortic annulus with the fabric sealing skirt interfacing with the native tissue in a clinically plausible manner.
+
+The device features a short cylindrical stent frame with metallic diamond lattice struts, three pale cream bioprosthetic leaflets in neutral position, and thin dark commissure posts.
+
+A delivery catheter with marker rings is visible, connected to a continuous guidewire. Clinical studio lighting with controlled reflections, shallow depth of field, no text, no watermark, no logo.</pre>
+        </div>
+    </div>
+
+    <div class="image-gallery">
+        <div class="gallery-item" onclick="openLightbox('test2-ghost')">
+            <img src="images/test2-ghost.webp" alt="Ghost Heart Deployed">
+            <div class="gallery-label">Ghost Human (25/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test2-aimage')">
+            <img src="images/test2-aimage.webp" alt="AIMAGE Heart Deployed">
+            <div class="gallery-label">AIMAGE (21/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test2-sora')">
+            <img src="images/test2-sora.webp" alt="Sora Heart Deployed">
+            <div class="gallery-label">Sora (19/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test2-flux')">
+            <img src="images/test2-flux2.webp" alt="Flux 2 Heart Deployed">
+            <div class="gallery-label">Flux 2 (16/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test2-nano')">
+            <img src="images/test2-nanobanana.webp" alt="Nano Banana Heart Deployed">
+            <div class="gallery-label">Nano Banana (15/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test2-midjourney')">
+            <img src="images/test2-midjourney.webp" alt="Midjourney Heart Deployed">
+            <div class="gallery-label">Midjourney (12/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test2-grok')">
+            <img src="images/test2-grok.webp" alt="Grok Heart Deployed">
+            <div class="gallery-label">Grok (10/25)</div>
+        </div>
+    </div>
+
+    <div class="score-table-container">
+        <table class="score-table">
+            <thead>
+                <tr>
+                    <th>Generator</th>
+                    <th>Prompt</th>
+                    <th>Labels</th>
+                    <th>Medical</th>
+                    <th>Concept</th>
+                    <th>Polish</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="ghost-row">
+                    <td>Ghost (Human Baseline)</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td><strong>25</strong></td>
+                </tr>
+                <tr>
+                    <td>AIMAGE</td>
+                    <td>4</td>
+                    <td>5</td>
+                    <td>4</td>
+                    <td>4</td>
+                    <td>4</td>
+                    <td><strong>21</strong></td>
+                </tr>
+                <tr>
+                    <td>Sora</td>
+                    <td>3</td>
+                    <td>5</td>
+                    <td>3</td>
+                    <td>4</td>
+                    <td>4</td>
+                    <td><strong>19</strong></td>
+                </tr>
+                <tr>
+                    <td>Flux 2</td>
+                    <td>3</td>
+                    <td>5</td>
+                    <td>2</td>
+                    <td>3</td>
+                    <td>3</td>
+                    <td><strong>16</strong></td>
+                </tr>
+                <tr>
+                    <td>Nano Banana</td>
+                    <td>2</td>
+                    <td>5</td>
+                    <td>2</td>
+                    <td>3</td>
+                    <td>3</td>
+                    <td><strong>15</strong></td>
+                </tr>
+                <tr>
+                    <td>Midjourney</td>
+                    <td>2</td>
+                    <td>5</td>
+                    <td>1</td>
+                    <td>2</td>
+                    <td>2</td>
+                    <td><strong>12</strong></td>
+                </tr>
+                <tr>
+                    <td>Grok</td>
+                    <td>2</td>
+                    <td>5</td>
+                    <td>1</td>
+                    <td>2</td>
+                    <td>0</td>
+                    <td><strong>10</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>Model-by-Model Notes</h3>
+
+    <div class="model-note">
+        <h4>Ghost (Human Baseline) <span class="score-badge">25/25</span></h4>
+        <p>Nails the requested inside-the-heart viewpoint, with convincing endocardial surfaces and an OR-style cutaway feel. The device placement reads as clinically plausible, seated at the annulus with tissue hugging the skirt in a believable way. Catheter alignment, guidewire continuity, and device details look intentional, not invented. Most importantly, this is CAD-based and surgeon-approved for placement and realism. That's what "as accurate and validated as it gets" looks like.</p>
+    </div>
+
+    <div class="model-note">
+        <h4>AIMAGE <span class="score-badge">21/25</span></h4>
+        <p>Very close to Ghost's framing and lighting, with believable wet tissue and a strong "in vivo cutaway" read. Valve looks broadly like a TAVR, with recognizable skirt and leaflets. Includes procedure cues (catheter and wires) in a way that mostly supports the story. Lost points because small geometry and anatomy decisions feel a bit improvised compared to Ghost, especially around how tissue interfaces with the skirt. It's close enough to be useful as a concept assist, but it's not at the "validated illustration" bar.</p>
+    </div>
+
+    <div class="model-note">
+        <h4>Sora <span class="score-badge">19/25</span></h4>
+        <p>Clean, polished cutaway look, good tissue shading, and a clear valve-at-annulus idea. The valve is centered and easy to read, with good overall clarity. Lost points because it drops key prompt requirements, most notably the catheter with marker rings and the continuous guidewire. It's "medical-looking" and well-rendered, but less procedurally truthful.</p>
+    </div>
+
+    <div class="model-note">
+        <h4>Flux 2 <span class="score-badge">16/25</span></h4>
+        <p>Includes the procedural setup (catheter, guidewire) and a readable cutaway scene. Decent polish and lighting. Lost points because the valve proportions and shape are off. The stent and skirt relationship looks wrong, and the overall geometry reads like something that would not realistically seat at the annulus. <strong>This is the exact failure mode that makes device marketing risky.</strong> It can look credible to non-experts while being physically implausible to anyone who knows the implant.</p>
+    </div>
+
+    <div class="model-note">
+        <h4>Midjourney <span class="score-badge">12/25</span></h4>
+        <p>Produces a dramatic medical render aesthetic. Device geometry becomes exaggerated and mechanically nonsensical relative to a real TAVR. View and anatomy are not reliably aligned with the specific instructions, and the result reads more like "cool sci-med concept art" than a constrained clinical illustration.</p>
+    </div>
+
+    <div class="model-note">
+        <h4>Grok <span class="score-badge">10/25</span></h4>
+        <p>Attempts a heart cutaway context. The device becomes an invented object. The stent and internal structure don't read like a deployed transcatheter valve. This is the "confident hallucination" problem: it outputs something that looks engineered, but it's not the <em>right</em> engineered thing. In a medical context, that's an automatic fail.</p>
+    </div>
+
+    <!-- ==================== TEST 3 ==================== -->
+
+    <h2>Test 3: Rotator Cuff Tendon Repair on Humeral Head</h2>
+
+    <p>This test matters because it's the exact kind of "looks simple, fails easily" medical render that separates real production-ready output from "medical-ish concept art."</p>
+
+    <p>What we're looking for is very specific, and very checkable:</p>
+
+    <ul>
+        <li><strong>Correct anatomy and vantage:</strong> Proximal humerus, humeral head, and a visible cut cancellous bone surface at the greater tuberosity</li>
+        <li><strong>Correct construct:</strong> Two anchors seated in bone, two white pads, and two wide blue suture tapes crossing in an X to compress the tendon footprint</li>
+        <li><strong>Clean studio composition:</strong> Minimal white background with soft translucent abstract wave shapes, no labels, no UI clutter</li>
+    </ul>
+
+    <div class="prompt-container" onclick="togglePrompt(this)">
+        <div class="prompt-header">
+            <strong>Show Prompt: Test 3, Rotator Cuff Repair</strong>
+            <span class="prompt-toggle">&#9660;</span>
+        </div>
+        <div class="prompt-content">
+            <pre>High resolution, photorealistic 3D orthopedic medical illustration of a rotator cuff repair on the shoulder.
+
+Show the proximal humerus with the rounded humeral head and a cut surface of cancellous bone at the greater tuberosity region, pale beige with porous texture. Surrounding is red striated muscle (deltoid and rotator cuff region) with realistic fiber direction and subtle sheen.
+
+On the lateral aspect, depict a repaired tendon footprint secured with two small circular suture anchors seated in bone, each anchor head visible as a small beige or metallic disk. Two wide blue suture tapes cross over two smooth white protective pads or tendon compression devices, forming an X pattern that compresses the tendon down onto the bone footprint.
+
+Composition is clean and centered, floating on a minimal white background with soft translucent abstract wave shapes behind the anatomy. Studio medical lighting, crisp focus, no text, no watermark, no logo.</pre>
+        </div>
+    </div>
+
+    <div class="image-gallery">
+        <div class="gallery-item" onclick="openLightbox('test3-ghost')">
+            <img src="images/test3-ghost.webp" alt="Ghost Shoulder">
+            <div class="gallery-label">Ghost Human (25/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test3-aimage')">
+            <img src="images/test3-aimage.webp" alt="AIMAGE Shoulder">
+            <div class="gallery-label">AIMAGE (21/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test3-sora')">
+            <img src="images/test3-sora.webp" alt="Sora Shoulder">
+            <div class="gallery-label">Sora (20/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test3-midjourney')">
+            <img src="images/test3-midjourney.webp" alt="Midjourney Shoulder">
+            <div class="gallery-label">Midjourney (12/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test3-flux')">
+            <img src="images/test3-flux2.webp" alt="Flux 2 Shoulder">
+            <div class="gallery-label">Flux 2 (11/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test3-nano')">
+            <img src="images/test3-nanobanana.webp" alt="Nano Banana Shoulder">
+            <div class="gallery-label">Nano Banana (11/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test3-grok')">
+            <img src="images/test3-grok.webp" alt="Grok Shoulder">
+            <div class="gallery-label">Grok (9/25)</div>
+        </div>
+    </div>
+
+    <div class="score-table-container">
+        <table class="score-table">
+            <thead>
+                <tr>
+                    <th>Generator</th>
+                    <th>Prompt</th>
+                    <th>Labels</th>
+                    <th>Medical</th>
+                    <th>Concept</th>
+                    <th>Polish</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="ghost-row">
+                    <td>Ghost (Human Baseline)</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td><strong>25</strong></td>
+                </tr>
+                <tr>
+                    <td>AIMAGE</td>
+                    <td>4</td>
+                    <td>5</td>
+                    <td>4</td>
+                    <td>4</td>
+                    <td>4</td>
+                    <td><strong>21</strong></td>
+                </tr>
+                <tr>
+                    <td>Sora</td>
+                    <td>4</td>
+                    <td>5</td>
+                    <td>3</td>
+                    <td>4</td>
+                    <td>4</td>
+                    <td><strong>20</strong></td>
+                </tr>
+                <tr>
+                    <td>Midjourney</td>
+                    <td>2</td>
+                    <td>5</td>
+                    <td>1</td>
+                    <td>2</td>
+                    <td>2</td>
+                    <td><strong>12</strong></td>
+                </tr>
+                <tr>
+                    <td>Flux 2</td>
+                    <td>1</td>
+                    <td>5</td>
+                    <td>1</td>
+                    <td>2</td>
+                    <td>2</td>
+                    <td><strong>11</strong></td>
+                </tr>
+                <tr>
+                    <td>Nano Banana</td>
+                    <td>1</td>
+                    <td>5</td>
+                    <td>1</td>
+                    <td>1</td>
+                    <td>3</td>
+                    <td><strong>11</strong></td>
+                </tr>
+                <tr>
+                    <td>Grok</td>
+                    <td>1</td>
+                    <td>5</td>
+                    <td>1</td>
+                    <td>1</td>
+                    <td>1</td>
+                    <td><strong>9</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>Model-by-Model Notes</h3>
+
+    <div class="model-note">
+        <h4>Ghost (Human Baseline) <span class="score-badge">25/25</span></h4>
+        <p>Hits every demanded element cleanly. Correct bony landmarking and cancellous cut, appropriate muscle context, two anchors, two pads, and a clear X-pattern tape construct compressing the footprint. The background treatment matches the "clean studio with wave shapes" spec. This is what the prompt is trying to reproduce, and it's the only image in the set that's a verified medical communication asset rather than a best-effort guess.</p>
+    </div>
+
+    <div class="model-note">
+        <h4>AIMAGE <span class="score-badge">21/25</span></h4>
+        <p>Closest to Ghost's composition. Clean white studio look, believable anatomy, background waves present, and the hardware is mostly in the right "family" (pads, tapes, anchor-like elements). Lost points because the tape routing and compression logic doesn't read as a crisp "two wide tapes forming an X over two pads." It's close, but the construct looks slightly improvised, which is exactly where medical device and procedure visuals can become non-defensible.</p>
+    </div>
+
+    <div class="model-note">
+        <h4>Sora <span class="score-badge">20/25</span></h4>
+        <p>Strong studio render quality and generally correct "rotator cuff repair vibe." Anchor-like hardware and sutures look plausible, and the tendon-on-bone concept is communicated clearly. Lost points because instead of two wide tapes crossing as an X over two pads, it trends toward multiple passes/loops. It also doesn't clearly deliver the abstract wave background requirement in the same way Ghost does.</p>
+    </div>
+
+    <div class="model-note">
+        <h4>Midjourney <span class="score-badge">12/25</span></h4>
+        <p>High visual punch and material detail. The repair construct becomes fantasy hardware. The blue "mass" and wiring look more like stylized textile or device debris than two tapes + two pads + two anchors. Background is not the clean white studio wave setup, and the anatomy-read is not anchored to a believable surgical illustration.</p>
+    </div>
+
+    <div class="model-note">
+        <h4>Flux 2 <span class="score-badge">11/25</span></h4>
+        <p>Clean background, decent rendering polish. It doesn't depict a rotator cuff repair construct. The scene reads like a shoulder anatomy render with an unrelated strap/cap concept. The required anchors, pads, and X-pattern tape compression are not present, so it can't score on adherence or medical accuracy.</p>
+    </div>
+
+    <div class="model-note">
+        <h4>Nano Banana <span class="score-badge">11/25</span></h4>
+        <p>Looks dramatic and "medical cinematic." It ignores the studio requirement and substitutes a stylized environment. It also doesn't deliver the specific repair construct (pads, anchors, correct tape layout). This is concept art, not a reproducible surgical visual.</p>
+    </div>
+
+    <div class="model-note">
+        <h4>Grok <span class="score-badge">9/25</span></h4>
+        <p>Wrong scene language and framing, wrong background, and the construct is not the requested repair. It doesn't follow the spec closely enough to earn points beyond "no labels."</p>
+    </div>
+
+    <!-- ==================== TEST 4 ==================== -->
+
+    <h2>Test 4: IV Catheter Hub with Labeled Callouts</h2>
+
+    <p>This one is a stress test for the stuff that usually breaks medical image generators in production, even when the render looks "pretty":</p>
+
+    <ul>
+        <li><strong>Hard constraints + exact text:</strong> Two labels, exact phrases, correct spelling, correct number of callouts, no extra text</li>
+        <li><strong>UI styling consistency:</strong> "Futuristic HUD" callouts with amber glow, micro UI details, leader lines, anchor points</li>
+        <li><strong>Transparent product realism:</strong> Clear plastic hub with believable internal geometry, ridges, reflections, and refraction, without turning into fantasy glass</li>
+        <li><strong>Clinical plausibility:</strong> Even if the anatomy is minimal, the insertion and scale still need to feel like an IV setup, not a random syringe in skin</li>
+        <li><strong>Production usefulness:</strong> Can you ship it with minor cleanup, or do you need a full re-build?</li>
+    </ul>
+
+    <div class="prompt-container" onclick="togglePrompt(this)">
+        <div class="prompt-header">
+            <strong>Show Prompt: Test 4, IV Catheter with Labels</strong>
+            <span class="prompt-toggle">&#9660;</span>
+        </div>
+        <div class="prompt-content">
+            <pre>Cinematic, photorealistic 3D medical render of an IV catheter system inserted into skin, wide horizontal composition.
+
+Foreground shows human skin surface in warm tan with fine pores and realistic specular highlights. A transparent ridged catheter hub and needle assembly are shown in close up, made of clear plastic with internal geometry visible, connected to a bluish catheter segment. Two translucent gloved fingertips hover above and behind, softly out of focus.
+
+Add two amber futuristic HUD callout labels with thin leader lines and small circular anchor points. The upper label text reads exactly: "Push-Off Tab". The lower label text reads exactly: "Ridged Catheter Hub".
+
+The label boxes are dark with glowing amber borders and subtle UI micro details, crisp typography, no other text. Soft clinical lighting, shallow depth of field, no watermark, no logo.</pre>
+        </div>
+    </div>
+
+    <div class="image-gallery">
+        <div class="gallery-item" onclick="openLightbox('test4-ghost')">
+            <img src="images/test4-ghost.webp" alt="Ghost IV">
+            <div class="gallery-label">Ghost Human (25/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test4-sora')">
+            <img src="images/test4-sora.webp" alt="Sora IV">
+            <div class="gallery-label">Sora (17/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test4-aimage')">
+            <img src="images/test4-aimage.webp" alt="AIMAGE IV">
+            <div class="gallery-label">AIMAGE (16/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test4-nano')">
+            <img src="images/test4-nanobanana.webp" alt="Nano Banana IV">
+            <div class="gallery-label">Nano Banana (13/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test4-flux')">
+            <img src="images/test4-flux2.webp" alt="Flux 2 IV">
+            <div class="gallery-label">Flux 2 (13/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test4-grok')">
+            <img src="images/test4-grok.webp" alt="Grok IV">
+            <div class="gallery-label">Grok (12/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test4-midjourney')">
+            <img src="images/test4-midjourney.webp" alt="Midjourney IV">
+            <div class="gallery-label">Midjourney (9/25)</div>
+        </div>
+    </div>
+
+    <div class="score-table-container">
+        <table class="score-table">
+            <thead>
+                <tr>
+                    <th>Generator</th>
+                    <th>Prompt</th>
+                    <th>Labels</th>
+                    <th>Medical</th>
+                    <th>Concept</th>
+                    <th>Polish</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="ghost-row">
+                    <td>Ghost (Human Baseline)</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td><strong>25</strong></td>
+                </tr>
+                <tr>
+                    <td>Sora</td>
+                    <td>3</td>
+                    <td>4</td>
+                    <td>2</td>
+                    <td>4</td>
+                    <td>4</td>
+                    <td><strong>17</strong></td>
+                </tr>
+                <tr>
+                    <td>AIMAGE</td>
+                    <td>3</td>
+                    <td>4</td>
+                    <td>2</td>
+                    <td>4</td>
+                    <td>3</td>
+                    <td><strong>16</strong></td>
+                </tr>
+                <tr>
+                    <td>Nano Banana</td>
+                    <td>2</td>
+                    <td>2</td>
+                    <td>2</td>
+                    <td>3</td>
+                    <td>4</td>
+                    <td><strong>13</strong></td>
+                </tr>
+                <tr>
+                    <td>Flux 2</td>
+                    <td>3</td>
+                    <td>2</td>
+                    <td>1</td>
+                    <td>3</td>
+                    <td>4</td>
+                    <td><strong>13</strong></td>
+                </tr>
+                <tr>
+                    <td>Grok</td>
+                    <td>2</td>
+                    <td>2</td>
+                    <td>2</td>
+                    <td>3</td>
+                    <td>3</td>
+                    <td><strong>12</strong></td>
+                </tr>
+                <tr>
+                    <td>Midjourney</td>
+                    <td>1</td>
+                    <td>0</td>
+                    <td>2</td>
+                    <td>2</td>
+                    <td>4</td>
+                    <td><strong>9</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>Model-by-Model Notes</h3>
+
+    <div class="model-note">
+        <h4>Ghost (Human Baseline) <span class="score-badge">25/25</span></h4>
+        <p>Everything the prompt demanded shows up cleanly and intentionally. Clear hub with believable internal detail, correct clinical framing, soft DOF with gloved fingertips, and the amber HUD callouts are the exact style target. This is what "production-correct" looks like. It's not just pretty. It's art-directed, CAD-grounded, and clinically reviewed, so the prompt is effectively a description of this result.</p>
+    </div>
+
+    <div class="model-note">
+        <h4>Sora <span class="score-badge">17/25</span></h4>
+        <p>Clean, readable callouts with correct phrases, clear product visibility, and overall high polish. If someone needed a quick marketing graphic, it's close. Lost points because the labels are not the amber HUD style with micro UI details. They're conventional boxes. The "two translucent gloved fingertips hovering" requirement is not met as written. One of the better "follow instructions and look clean" attempts, but it doesn't hit the specific Ghost HUD art direction.</p>
+    </div>
+
+    <div class="model-note">
+        <h4>AIMAGE <span class="score-badge">16/25</span></h4>
+        <p>Strongly resembles the client's callout branding language and placement logic. Two callouts, leader lines, readable typography, generally clean presentation. Lost points because HUD color and styling drift (reads more "blue hologram overlays" than "amber futuristic HUD"), and the composition is not the requested tight macro closeup with two out-of-focus fingertips hovering behind. Very usable as a style-matcher, still not dependable for clinically plausible placement without correction.</p>
+    </div>
+
+    <div class="model-note">
+        <h4>Flux 2 <span class="score-badge">13/25</span></h4>
+        <p>The callout style is suspiciously close to the Ghost HUD look, and the render polish is strong. If this were a pure "make it look cool" test, it would rank higher. Lost points because the lower label is misspelled ("Ridge Catheter Hub" instead of "Ridged Catheter Hub"), which is an automatic major hit in a medical labeling test. It appears to have learned the aesthetic, but not the clinical truth underneath it.</p>
+    </div>
+
+    <div class="model-note">
+        <h4>Nano Banana <span class="score-badge">13/25</span></h4>
+        <p>Strong visual polish, clean studio feel, good depth and lighting. Lost points because of misspelling on "Ridged Catheter Hub" (it reads like "Carheter"), which is a labeling failure for this test. Looks good, fails the "exact words, exact style" requirement.</p>
+    </div>
+
+    <div class="model-note">
+        <h4>Midjourney <span class="score-badge">9/25</span></h4>
+        <p>High-end cinematic rendering and texture detail. <strong>This is the classic failure mode.</strong> It invents extra labels, adds gibberish microtext, and violates "no other text." It can look expensive, but it's unreliable where medical work actually breaks, which is text discipline and constraint-following.</p>
+    </div>
+
+    <!-- ==================== TEST 5 ==================== -->
+
+    <h2>Test 5: Microcellular Healing Infographic</h2>
+
+    <p>This test is about biological storytelling and infographic discipline: can the AI communicate a cellular healing progression across time, with correct labels, correct phases, and correct visual hierarchy?</p>
+
+    <p>Scoring categories for this test:</p>
+
+    <ol>
+        <li><strong>Prompt match and layout compliance</strong> - frame, continuous band, left to right progression</li>
+        <li><strong>Header tabs and typography accuracy</strong> - exact wording, clean placement, no overlap</li>
+        <li><strong>Biological storytelling plausibility</strong> - RBCs, immune cells, fibroblasts, ECM, vessels</li>
+        <li><strong>Design clarity</strong> - readability, hierarchy, not visually cluttered</li>
+        <li><strong>Render quality</strong> - materials, lighting, depth, polish</li>
+    </ol>
+
+    <div class="prompt-container" onclick="togglePrompt(this)">
+        <div class="prompt-header">
+            <strong>Show Prompt: Test 5, Microcellular Healing Infographic</strong>
+            <span class="prompt-toggle">&#9660;</span>
+        </div>
+        <div class="prompt-content">
+            <pre>High resolution, wide horizontal medical infographic illustration showing tissue healing progression inside a fibrous scaffold, left to right.
+
+Background is a clean gradient panel with a rounded rectangular frame, subtle drop shadow, and a neutral clinical gray backdrop.
+
+Main illustration is a long continuous band of pale blue and white scaffold fibers transitioning into integrated tissue.
+
+Left third: dense chaotic scaffold mesh with many red blood cells (small red biconcave discs) and several immune cells (purple and yellow spheres) embedded between fibers.
+
+Middle third: scaffold becomes slightly less dense and more organized, with spindle shaped fibroblasts (pink elongated cells) aligned along fibers and increased extracellular matrix.
+
+Right third: mature tissue with thicker aligned pale pink fibers and branching red blood vessels (arterioles) embedded through the tissue, scaffold strands thinning and fading.
+
+At the top, include three color coded header tabs with circular thumbnails and exact text:
+Left tab, orange theme: "0-3 Days" on the top line and "Inflammatory Response" beneath it.
+Middle tab, magenta theme: "1-45 Days" on the top line and "Cellular Proliferation" beneath it.
+Right tab, blue theme: "30-300 Days" on the top line and "Maturation & Remodeling" beneath it.
+
+Typography is modern, clean, perfectly spelled, and does not overlap the main illustration. Soft clinical lighting, realistic restrained colors, no decorative flourishes, no branding, no watermark, no logo.</pre>
+        </div>
+    </div>
+
+    <div class="image-gallery">
+        <div class="gallery-item" onclick="openLightbox('test5-ghost')">
+            <img src="images/test5-ghost.webp" alt="Ghost MOA">
+            <div class="gallery-label">Ghost Human (25/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test5-sora')">
+            <img src="images/test5-sora.webp" alt="Sora MOA">
+            <div class="gallery-label">Sora (21/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test5-flux')">
+            <img src="images/test5-flux2.webp" alt="Flux 2 MOA">
+            <div class="gallery-label">Flux 2 (20/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test5-aimage')">
+            <img src="images/test5-aimage.webp" alt="AIMAGE MOA">
+            <div class="gallery-label">AIMAGE (18/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test5-nano')">
+            <img src="images/test5-nanobanana.webp" alt="Nano Banana MOA">
+            <div class="gallery-label">Nano Banana (14/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test5-grok')">
+            <img src="images/test5-grok.webp" alt="Grok MOA">
+            <div class="gallery-label">Grok (13/25)</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('test5-midjourney')">
+            <img src="images/test5-midjourney.webp" alt="Midjourney MOA">
+            <div class="gallery-label">Midjourney (11/25)</div>
+        </div>
+    </div>
+
+    <div class="score-table-container">
+        <table class="score-table">
+            <thead>
+                <tr>
+                    <th>Generator</th>
+                    <th>Prompt</th>
+                    <th>Tabs</th>
+                    <th>Bio Story</th>
+                    <th>Clarity</th>
+                    <th>Render</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="ghost-row">
+                    <td>Ghost (Human Baseline)</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td><strong>25</strong></td>
+                </tr>
+                <tr>
+                    <td>Sora</td>
+                    <td>4</td>
+                    <td>5</td>
+                    <td>4</td>
+                    <td>4</td>
+                    <td>4</td>
+                    <td><strong>21</strong></td>
+                </tr>
+                <tr>
+                    <td>Flux 2</td>
+                    <td>4</td>
+                    <td>5</td>
+                    <td>4</td>
+                    <td>3</td>
+                    <td>4</td>
+                    <td><strong>20</strong></td>
+                </tr>
+                <tr>
+                    <td>AIMAGE</td>
+                    <td>3</td>
+                    <td>4</td>
+                    <td>4</td>
+                    <td>3</td>
+                    <td>4</td>
+                    <td><strong>18</strong></td>
+                </tr>
+                <tr>
+                    <td>Nano Banana</td>
+                    <td>2</td>
+                    <td>4</td>
+                    <td>2</td>
+                    <td>3</td>
+                    <td>3</td>
+                    <td><strong>14</strong></td>
+                </tr>
+                <tr>
+                    <td>Grok</td>
+                    <td>2</td>
+                    <td>2</td>
+                    <td>3</td>
+                    <td>2</td>
+                    <td>4</td>
+                    <td><strong>13</strong></td>
+                </tr>
+                <tr>
+                    <td>Midjourney</td>
+                    <td>1</td>
+                    <td>1</td>
+                    <td>3</td>
+                    <td>2</td>
+                    <td>4</td>
+                    <td><strong>11</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>Model-by-Model Notes</h3>
+
+    <div class="model-note">
+        <h4>Ghost (Human Baseline) <span class="score-badge">25/25</span></h4>
+        <p>Worth noting: MOAs are more about artistically imagining microcellular structures than actually knowing what they look like or how they interact. Even Ghost is flying more in imagination than strict medical adherence to structure and coloring. But this is what the client wanted, and Ghost delivered what the client wanted. That's the job.</p>
+    </div>
+
+    <div class="model-note">
+        <h4>Sora <span class="score-badge">21/25</span></h4>
+        <p>Very strong on the core infographic band. The left inflammatory zone, middle proliferative zone with spindle-like cells, and right mature zone with branching vessels read cleanly. Text is clear and correctly spelled. Lost points because the prompt asked for three color-coded header tabs with circular thumbnails. This version uses clean circular labels but not the tab system or thumbnail treatment. Close to the prompt on the science-illustration read and clarity, slightly off on the specific header-tab styling requirements.</p>
+    </div>
+
+    <div class="model-note">
+        <h4>Flux 2 <span class="score-badge">20/25</span></h4>
+        <p>Follows the infographic "panel" idea well, including the rounded frame and the three color-coded header tabs with the correct text. The staged biological progression is present. Lost points because the composition wastes a lot of space, with the main band sitting smaller inside a large empty panel. It checks many boxes, but the execution feels like a template with a small inset illustration rather than the centerpiece being the band itself.</p>
+    </div>
+
+    <div class="model-note">
+        <h4>AIMAGE <span class="score-badge">18/25</span></h4>
+        <p>Excellent micro-structure energy and density, and it broadly communicates inflammation to remodeling. The phase labels and time ranges are correct and placed at the top without colliding heavily. Lost points because the top UI spec is not followed (no header tabs with circular thumbnails), and the scaffold fibers become visually dominant and clutter the readability. Strong "trained-on-brand" vibe but too busy.</p>
+    </div>
+
+    <div class="model-note">
+        <h4>Grok <span class="score-badge">13/25</span></h4>
+        <p>The micro environment looks plausibly "cellular," and the render itself is reasonably polished. Failed multiple hard constraints: wrong time labeling (uses "45+ Days" instead of "30-300 Days"), missing the requested header-tab system and rounded panel framing. Pretty image, but it's not the prompt.</p>
+    </div>
+
+    <div class="model-note">
+        <h4>Midjourney <span class="score-badge">11/25</span></h4>
+        <p>Render polish and micro-fiber aesthetics are strong. Violates the biggest hard constraint: text must be perfectly spelled and exactly match. This one contains gibberish and incorrect labels, and it doesn't follow the specified header-tab system or the exact time/phase structure. Visually attractive, structurally non-compliant.</p>
+    </div>
+
+    <!-- ==================== CONCLUSION ==================== -->
+
+    <h2>The Verdict: We're Not Dead Yet</h2>
+
+    <p>Let me be direct: <strong>none of these models are ready for serious medical accuracy.</strong></p>
+
+    <p>At Ghost, we do use AI for generating images. But only for very rough concepting, inspiration, and fast color tests. No AI-generated images <strong>ever</strong> make their way into our final output that we sell to clients. Not because of some moral or ethical blockade, but because it isn't good enough to pass. We use AI to quickly show our clients ideas, rough ideas, or to show different versions of our work like changing out backgrounds or shaders or other aesthetic treatments to images. Once approved, we use the AI gen as reference and then we use our process and tools like Maya, Houdini, Substance, After Effects, etc. to make it the right way.</p>
+
+    <div class="success-box">
+        <strong>How AI wins today: Speed.</strong><br>
+        Every AI delivered images in under a minute. Ghost baseline images took weeks. When these tools reliably pass a "medical accuracy Turing test," speed alone will seriously disrupt this field. We're not pretending otherwise.
+    </div>
+
+    <h3>Why Can AI Render Anime Perfectly But Fail at Basic Medical Applications?</h3>
+
+    <p>It's all about training data.</p>
+
+    <p>In five years, Midjourney has output hundreds of millions of images of scantily clad videogame heroines and been scored by their prompters millions of times. This is how machine learning works. Meanwhile, it has only been prompted to make medically accurate art a handful of times in comparison, and when it outputs that art, only a fraction of the graders can actually determine whether or not it's accurate.</p>
+
+    <p>So while Grok has become quite competent at outputting meme images of liberal politicians looking afraid and crying, and Sora can put anyone in a plastic action figure bubble pack, medically accurate art won't be possible until the machines have been trained in roughly the same way.</p>
+
+    <h3>What About AIMAGE?</h3>
+
+    <p>Our own LoRA-trained model has been trained on thousands of images that we made ourselves. We've even gone as far as to render every vertebrae in every possible angle, painstakingly labeled and tagged structures. But if we ask it for something it hasn't yet been shown, like "show L4 with a herniated disc and a partial corpectomy," it will likely mess something up completely. The herniation ends up not even in the disk, there's no cancellous bone, and if that's a partial corpectomy I don't want to see what it thinks a full corpectomy looks like.</p>
+
+    <p>What AIMAGE <em>is</em> good at is handling prompts like "replace the bony anatomy for acrylic" or "change the background to an empty OR in the year 2099." That's how we currently use it: to show us different ways we could style the visual aspects of a client's output, not to accurately render anatomy.</p>
+
+    <h4>AIMAGE: What It Gets Wrong vs. What It Gets Right</h4>
+
+    <div class="aimage-examples">
+        <div class="aimage-example">
+            <img src="images/aimage-spine-fail.webp" alt="AIMAGE L4 herniated disc attempt" onclick="openLightbox('aimage-spine')">
+            <p><strong>The L4 Herniated Disc Test</strong><br>We asked for "L4 with a herniated disc and partial corpectomy." The herniation isn't even in the disc, there's no cancellous bone, and... well, you can see for yourself.</p>
+        </div>
+        <div class="aimage-example">
+            <img src="images/aimage-acrylic.webp" alt="AIMAGE acrylic material swap" onclick="openLightbox('aimage-acrylic')">
+            <p><strong>Style Transfer: Acrylic Material</strong><br>"Replace the bony anatomy with acrylic." This is where AIMAGE shines — aesthetic variations on known structures.</p>
+        </div>
+        <div class="aimage-example">
+            <img src="images/aimage-or-2099.webp" alt="AIMAGE futuristic OR background" onclick="openLightbox('aimage-or')">
+            <p><strong>Background Swap: OR in 2099</strong><br>"Change the background to an empty OR in the year 2099." Fast style exploration without touching the core anatomy.</p>
+        </div>
+    </div>
+
+    <p>See the pattern? AIMAGE is excellent at <em>restyling</em> things it already knows. Ask it to <em>invent</em> something anatomically complex it hasn't been trained on? That's where it falls apart. Same story as all the other AI models, just with a narrower (but deeper) domain.</p>
+
+    <h3>Cumulative Results Across All Tests</h3>
+
+    <div class="score-table-container">
+        <table class="score-table summary-table">
+            <thead>
+                <tr>
+                    <th>Generator</th>
+                    <th>Test 1</th>
+                    <th>Test 2</th>
+                    <th>Test 3</th>
+                    <th>Test 4</th>
+                    <th>Test 5</th>
+                    <th>Total (125)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="ghost-row">
+                    <td>Ghost (Human Baseline)</td>
+                    <td>25</td>
+                    <td>25</td>
+                    <td>25</td>
+                    <td>25</td>
+                    <td>25</td>
+                    <td><strong>125</strong></td>
+                </tr>
+                <tr>
+                    <td>AIMAGE</td>
+                    <td>22</td>
+                    <td>21</td>
+                    <td>21</td>
+                    <td>16</td>
+                    <td>18</td>
+                    <td><strong>98</strong></td>
+                </tr>
+                <tr>
+                    <td>Sora</td>
+                    <td>21</td>
+                    <td>19</td>
+                    <td>20</td>
+                    <td>17</td>
+                    <td>21</td>
+                    <td><strong>98</strong></td>
+                </tr>
+                <tr>
+                    <td>Flux 2</td>
+                    <td>15</td>
+                    <td>16</td>
+                    <td>11</td>
+                    <td>13</td>
+                    <td>20</td>
+                    <td><strong>75</strong></td>
+                </tr>
+                <tr>
+                    <td>Nano Banana</td>
+                    <td>9</td>
+                    <td>15</td>
+                    <td>11</td>
+                    <td>13</td>
+                    <td>14</td>
+                    <td><strong>62</strong></td>
+                </tr>
+                <tr>
+                    <td>Midjourney</td>
+                    <td>10</td>
+                    <td>12</td>
+                    <td>12</td>
+                    <td>9</td>
+                    <td>11</td>
+                    <td><strong>54</strong></td>
+                </tr>
+                <tr>
+                    <td>Grok</td>
+                    <td>8</td>
+                    <td>10</td>
+                    <td>9</td>
+                    <td>12</td>
+                    <td>13</td>
+                    <td><strong>52</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>The Final Ranking</h3>
+
+    <ul>
+        <li><strong>Ghost (125/125):</strong> The control. This is what validated medical illustration looks like.</li>
+        <li><strong>AIMAGE (98/125):</strong> Tied for best AI. Domain training matters. When it has seen the object, it performs.</li>
+        <li><strong>Sora (98/125):</strong> Tied for best AI. Strong general-purpose renderer. Surprisingly competent at medical contexts.</li>
+        <li><strong>Flux 2 (75/125):</strong> Middle of the pack. Can look photoreal while being medically wrong.</li>
+        <li><strong>Nano Banana (62/125):</strong> Inconsistent. Sometimes solid, sometimes confused.</li>
+        <li><strong>Midjourney (54/125):</strong> Still the aesthetic champion. Still unreliable for anything requiring text discipline or medical accuracy.</li>
+        <li><strong>Grok (52/125):</strong> The meme machine is not ready for the OR.</li>
+    </ul>
+
+    <h3>The Future of Medical Illustration</h3>
+
+    <p>I'm not sure how long it will be before AI can do what Ghost does well enough that people can't tell our work from the AI's output. Based on our tests today, we probably have a while.</p>
+
+    <p>But I'm not naive. The trajectory is clear:</p>
+
+    <ul>
+        <li>Fewer people making images from scratch</li>
+        <li>More people supervising, correcting, and approving</li>
+        <li>Artists pushed into higher-leverage roles like creative direction and prompt/pipeline design</li>
+        <li>Downstream roles expanding: quality control, fact-checking, correction passes</li>
+    </ul>
+
+    <p>AI does help us in many other ways already: render checking, project management, cleaning up models, textures, and shaders. It's a tool, and we use it.</p>
+
+    <h3>Should You Pursue a Career in Medical Illustration?</h3>
+
+    <p>Is your expensive and painstaking degree in Medical Illustration a waste of time? That's not for me to say. We'll always need people who know what medically accurate images need to be, even if AI ends up doing all the work. Your knowledge will always be necessary, even if your Maya and Photoshop skills aren't worth the many hours it would take for you to make something that AI can make in seconds.</p>
+
+    <p>Maybe the better question is: did I encourage my children to follow in my footsteps?</p>
+
+    <p>No. But largely because they have their own interests and talents, and everyone must follow their own path. When they asked for my honest opinion, I did sway them into careers that I thought were a bit less likely to become replaced by AI in the future. My son studied VR development at Ringling and is currently working as a pre-vis designer at GM making the latest model Corvette look cooler than it ever has. My daughter is studying to become a PA because she's more interested in working directly with the patient than my profession that makes the content that educates the patient and the practitioner.</p>
+
+    <p>For her, this is more real. For me, this is inefficient. "One patient at a time? That's gotta be the slowest way to help people ever." :P</p>
+
+    <div class="info-box">
+        <strong>The important thing to remember:</strong> Find something you love doing that makes you feel like you're making the difference you want to see in the world. And become so good at something so important that it's impossible to not pay you to do it. That's important.
+        <br><br>
+        Sorry to everyone studying medieval poetry. Nobody needs your skills, but we do need iced coffee at the local Starbucks, so no matter what, you're always employable.
+    </div>
+
+    <hr style="margin: 3em 0; border: none; border-top: 1px solid #e0e0e0;">
+
+    <p style="text-align: center; color: #666;">
+        <strong>Ghost Medical</strong> (Ghost Productions, Inc.) is a creative and strategic studio specializing in medical visualization, animation, illustration, and advanced storytelling for healthcare and technology companies.<br><br>
+        Medical accuracy is non-negotiable. Visuals must support understanding, not distract from it.<br><br>
+        <a href="https://www.ghostmedical.com">ghostmedical.com</a>
+    </p>
+
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox" class="lightbox" onclick="closeLightbox()">
+    <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+    <div class="lightbox-content" onclick="event.stopPropagation()">
+        <img id="lightbox-img" src="" alt="Expanded view">
+        <div id="lightbox-caption" class="lightbox-caption"></div>
+    </div>
+</div>
+
+<script>
+    // Toggle prompt visibility
+    function togglePrompt(element) {
+        element.classList.toggle('active');
+    }
+
+    // Copy link function
+    function copyLink() {
+        navigator.clipboard.writeText(window.location.href).then(function() {
+            alert('Link copied to clipboard!');
+        });
+    }
+
+    // Lightbox data with correct image paths
+    const lightboxData = {
+        // Test 0
+        'test0-nano': { src: 'images/test0-nanobanana.webp', caption: 'Nano Banana Anatomy Poster (17/25)' },
+        'test0-sora': { src: 'images/test0-sora.webp', caption: 'Sora Anatomy Poster (16/25)' },
+        'test0-flux': { src: 'images/test0-flux2.webp', caption: 'Flux 2 Anatomy Poster (15/25)' },
+        'test0-grok': { src: 'images/test0-grok.webp', caption: 'Grok Anatomy Poster (15/25)' },
+        'test0-midjourney': { src: 'images/test0-midjourney.webp', caption: 'Midjourney Anatomy Poster (13/25)' },
+        // Test 1
+        'test1-ghost': { src: 'images/test1-ghost.webp', caption: 'Ghost Human Baseline TAVR (25/25)' },
+        'test1-aimage': { src: 'images/test1-aimage.webp', caption: 'AIMAGE TAVR (22/25)' },
+        'test1-sora': { src: 'images/test1-sora.webp', caption: 'Sora TAVR (21/25)' },
+        'test1-flux': { src: 'images/test1-flux2.webp', caption: 'Flux 2 TAVR (15/25)' },
+        'test1-midjourney': { src: 'images/test1-midjourney.webp', caption: 'Midjourney TAVR (10/25)' },
+        'test1-nano': { src: 'images/test1-nanobanana.webp', caption: 'Nano Banana TAVR (9/25)' },
+        'test1-grok': { src: 'images/test1-grok.webp', caption: 'Grok TAVR (8/25)' },
+        // Test 2
+        'test2-ghost': { src: 'images/test2-ghost.webp', caption: 'Ghost Heart Deployed (25/25)' },
+        'test2-aimage': { src: 'images/test2-aimage.webp', caption: 'AIMAGE Heart Deployed (21/25)' },
+        'test2-sora': { src: 'images/test2-sora.webp', caption: 'Sora Heart Deployed (19/25)' },
+        'test2-flux': { src: 'images/test2-flux2.webp', caption: 'Flux 2 Heart Deployed (16/25)' },
+        'test2-nano': { src: 'images/test2-nanobanana.webp', caption: 'Nano Banana Heart Deployed (15/25)' },
+        'test2-midjourney': { src: 'images/test2-midjourney.webp', caption: 'Midjourney Heart Deployed (12/25)' },
+        'test2-grok': { src: 'images/test2-grok.webp', caption: 'Grok Heart Deployed (10/25)' },
+        // Test 3
+        'test3-ghost': { src: 'images/test3-ghost.webp', caption: 'Ghost Shoulder Repair (25/25)' },
+        'test3-aimage': { src: 'images/test3-aimage.webp', caption: 'AIMAGE Shoulder Repair (21/25)' },
+        'test3-sora': { src: 'images/test3-sora.webp', caption: 'Sora Shoulder Repair (20/25)' },
+        'test3-midjourney': { src: 'images/test3-midjourney.webp', caption: 'Midjourney Shoulder Repair (12/25)' },
+        'test3-flux': { src: 'images/test3-flux2.webp', caption: 'Flux 2 Shoulder Repair (11/25)' },
+        'test3-nano': { src: 'images/test3-nanobanana.webp', caption: 'Nano Banana Shoulder Repair (11/25)' },
+        'test3-grok': { src: 'images/test3-grok.webp', caption: 'Grok Shoulder Repair (9/25)' },
+        // Test 4
+        'test4-ghost': { src: 'images/test4-ghost.webp', caption: 'Ghost IV Catheter (25/25)' },
+        'test4-sora': { src: 'images/test4-sora.webp', caption: 'Sora IV Catheter (17/25)' },
+        'test4-aimage': { src: 'images/test4-aimage.webp', caption: 'AIMAGE IV Catheter (16/25)' },
+        'test4-nano': { src: 'images/test4-nanobanana.webp', caption: 'Nano Banana IV Catheter (13/25)' },
+        'test4-flux': { src: 'images/test4-flux2.webp', caption: 'Flux 2 IV Catheter (13/25)' },
+        'test4-grok': { src: 'images/test4-grok.webp', caption: 'Grok IV Catheter (12/25)' },
+        'test4-midjourney': { src: 'images/test4-midjourney.webp', caption: 'Midjourney IV Catheter (9/25)' },
+        // Test 5
+        'test5-ghost': { src: 'images/test5-ghost.webp', caption: 'Ghost MOA Infographic (25/25)' },
+        'test5-sora': { src: 'images/test5-sora.webp', caption: 'Sora MOA Infographic (21/25)' },
+        'test5-flux': { src: 'images/test5-flux2.webp', caption: 'Flux 2 MOA Infographic (20/25)' },
+        'test5-aimage': { src: 'images/test5-aimage.webp', caption: 'AIMAGE MOA Infographic (18/25)' },
+        'test5-nano': { src: 'images/test5-nanobanana.webp', caption: 'Nano Banana MOA Infographic (14/25)' },
+        'test5-grok': { src: 'images/test5-grok.webp', caption: 'Grok MOA Infographic (13/25)' },
+        'test5-midjourney': { src: 'images/test5-midjourney.webp', caption: 'Midjourney MOA Infographic (11/25)' },
+        // AIMAGE Examples
+        'aimage-spine': { src: 'images/aimage-spine-fail.webp', caption: 'AIMAGE L4 Herniated Disc Attempt - Note the anatomical errors' },
+        'aimage-acrylic': { src: 'images/aimage-acrylic.webp', caption: 'AIMAGE Style Transfer - Acrylic Material Swap' },
+        'aimage-or': { src: 'images/aimage-or-2099.webp', caption: 'AIMAGE Background Swap - Futuristic OR' }
+    };
+
+    function openLightbox(imageId) {
+        const lightbox = document.getElementById('lightbox');
+        const img = document.getElementById('lightbox-img');
+        const caption = document.getElementById('lightbox-caption');
+
+        const data = lightboxData[imageId];
+        if (data) {
+            img.src = data.src;
+            caption.textContent = data.caption;
+        }
+
+        lightbox.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+        const lightbox = document.getElementById('lightbox');
+        lightbox.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+
+    // Close lightbox with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeLightbox();
+        }
+    });
+</script>
+
+</body>
+</html>
